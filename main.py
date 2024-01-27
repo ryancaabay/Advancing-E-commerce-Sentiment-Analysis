@@ -1,48 +1,54 @@
-from transformers import pipeline
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
-import torch
-import torch.nn.functional as F
+import pandas as pd
+from sklearn.pipeline import Pipeline
+from category_encoders import TargetEncoder
+from xgboost import XGBClassifier
+import numpy as np
 
-model_name = "distilbert-base-uncased-finetuned-sst-2-english"
+df = pd.read_csv('reviews_preprocessed.csv')
 
-model = AutoModelForSequenceClassification.from_pretrained(model_name)
-tokenizer = AutoTokenizer.from_pretrained(model_name)
+cols_to_drop = ['review']
 
-classifier = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)
-results = classifier(["We are very happy to show you the Transformers library.",
-                      "We hope you don't hate it."])
+df = df.drop(columns=cols_to_drop)
 
-for result in results:
-    print(result)
+from sklearn.model_selection import train_test_split
 
-tokens = tokenizer.tokenize("We are very happy to show you the Transformers library.")
-token_ids = tokenizer.convert_tokens_to_ids(tokens)
-input_ids = tokenizer("We are very happy to show you the Transformers library.")
+X = df.drop(columns=['sentiment'])
+y = df['sentiment']
 
-print(f'    Tokens: {tokens}')
-print(f'Token IDs: {token_ids}')
-print(f'Input IDs: {input_ids }')
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y, random_state=8)
 
-X_train = ["We are very happy to show you the Transformers library.",
-           "We hope you don't hate it."]
+estimators = [('encoder', TargetEncoder()), 
+              ('classifier', XGBClassifier(random_state=8))]
 
-batch = tokenizer(X_train, padding=True, truncation=True, max_length=512, return_tensors="pt")
-#print(batch)
+pipe = Pipeline(estimators)
 
-with torch.no_grad():
-    outputs = model(**batch, labels=torch.tensor([1, 0]))
-    print(outputs)
-    predictions = F.softmax(outputs.logits, dim=1)
-    print(predictions)
-    labels = torch.argmax(predictions, dim=1)
-    print(labels)
-    labels = [model.config.id2label[label_id] for label_id in labels.tolist()]
-    print(labels)
+Pipeline(steps=[('encoder', TargetEncoder()), 
+                ('classifier', 
+                 XGBClassifier(base_score=None, booster=None,
+                               colsample_bylevel=None, colsample_bynode=None,
+                               colsample_bytree=None, enable_categorical=False,
+                               gamma=None, gpu_id=None, importance_type=None,
+                               interaction_constraints=None, learning_rate=None,
+                               max_delta_step=None, max_depth=None,
+                               min_child_weight=None, missing=np.nan,
+                               monotone_constraints=None, n_estimators=100,
+                               n_jobs=None, num_parallel_tree=None,
+                               predictor=None, random_state=8, reg_alpha=None,
+                               reg_lambda=None, scale_pos_weight=None,
+                               subsample=None, tree_method=None,
+                               validate_parameters=None, verbosity=None))])
 
+from skopt import BayesSearchCV
+from skopt.space import Real, Categorical, Integer
 
-save_directory = "saved"
-tokenizer.save_pretrained(save_directory)
-model.save_pretrained(save_directory)
-
-tokenizer = AutoTokenizer.from_pretrained(save_directory)
-model = AutoModelForSequenceClassification.from_pretrained(save_directory)
+search_space = {
+    'classifier__max_depth': Integer(2, 8),
+    'classifier__learning_rate': Real(0.001, 1.0, prior='log-uniform'),
+    'classifier_subsample': Real(0.5, 1.0),
+    'classifier_colsample_bytree': Real(0.5, 1.0),
+    'classifier_colsample_bylevel': Real(0.5, 1.0),
+    'classifier_colsample_bynode': Real(0.5, 1.0),
+    'classifier_reg_alpha': Real(0.0, 10.0),
+    'classifier_reg_lambda': Real(0.0, 10.0),
+    'classifier__n_estimators': Integer(0.0, 10.0)
+}
