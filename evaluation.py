@@ -6,7 +6,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 from model import saved_model
 
 
-data = pd.read_csv('reviews_preprocessed.csv')
+data = pd.read_csv('dataset/reviews_preprocessed.csv')
 data = data.drop(['review'], axis='columns')
 
 X = data.drop(columns=['sentiment'])

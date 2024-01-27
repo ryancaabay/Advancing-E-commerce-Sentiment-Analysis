@@ -25,7 +25,7 @@ def timer(start_time=None):
         print('\nTime taken: %i hours %i minutes and %s seconds.\n' % (thour, tmin, round(tsec, 2)))
 
 
-data = pd.read_csv('reviews_preprocessed.csv')
+data = pd.read_csv('dataset/reviews_preprocessed.csv')
 data = data.drop(['review'], axis='columns')
 
 
@@ -63,6 +63,6 @@ best_params = {
 classifier = XGBClassifier(**best_params)
 classifier.fit(X_train, y_train)
 
-joblib.dump(classifier, 'xgb_model.pkl')
-saved_model = joblib.load('xgb_model.pkl')
+joblib.dump(classifier, 'model/xgb_model.pkl')
+saved_model = joblib.load('model/xgb_model.pkl')
 
