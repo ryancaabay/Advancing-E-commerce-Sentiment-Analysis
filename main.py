@@ -1,16 +1,16 @@
 import pandas as pd
+from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from category_encoders import TargetEncoder
 from xgboost import XGBClassifier
 import numpy as np
+from xgboost import plot_importance
 
 df = pd.read_csv('reviews_preprocessed.csv')
 
 cols_to_drop = ['review']
 
 df = df.drop(columns=cols_to_drop)
-
-from sklearn.model_selection import train_test_split
 
 X = df.drop(columns=['sentiment'])
 y = df['sentiment']
@@ -50,5 +50,21 @@ search_space = {
     'classifier_colsample_bynode': Real(0.5, 1.0),
     'classifier_reg_alpha': Real(0.0, 10.0),
     'classifier_reg_lambda': Real(0.0, 10.0),
-    'classifier__n_estimators': Integer(0.0, 10.0)
+    'classifier__gamma': Real(0.0, 10.0)
 }
+
+opt = BayesSearchCV(pipe, search_space, cv=3, n_iter=10, scoring='roc_auc', random_state=8)
+
+opt.fit(X_train, y_train)
+
+opt.best_estimator_
+opt.best_score_
+opt.score(X_test, y_test)
+opt.predict(X_test)
+opt.predict_proba(X_test)
+
+opt.best_estimator_.steps
+
+xgboost_step = opt.best_estimator_.steps[1]
+xgboost_model = xgboost_step[1]
+plot_importance(xgboost_model)
