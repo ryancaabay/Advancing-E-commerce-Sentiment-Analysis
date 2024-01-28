@@ -11,7 +11,7 @@ model = AutoModelForSequenceClassification.from_pretrained(model_name)
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 
 classifier = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)
-results = classifier(df['review'].tolist(), truncation='longest_first', max_length=512)
+#results = classifier(df['review'].tolist(), truncation='longest_first', max_length=512)
 
 sentiment_mapping = {'negative': 0, 'neutral': 1, 'positive': 2}
 
@@ -19,6 +19,7 @@ labels = []
 scores = []
 
 for result in classifier(df['review'].tolist(), truncation='longest_first', max_length=512):
+    print(result)
     labels.append(sentiment_mapping[result['label']])
     scores.append(result['score'])
 
