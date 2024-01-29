@@ -11,7 +11,8 @@ params={
     "max_depth": [3, 4, 5, 6, 8, 10, 12, 15],
     "min_child_weight": [1, 3, 5, 7],
     "gamma": [0.0, 0.1, 0.2 , 0.3, 0.4],
-    "colsample_bytree": [0.3, 0.4, 0.5 , 0.7]
+    "colsample_bytree": [0.3, 0.4, 0.5 , 0.7],
+    "subsample": [0.5, 0.6, 0.7, 0.8, 0.9]
 }
 
 
@@ -37,15 +38,16 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.2)
 
 """
 model = XGBClassifier()
+
 grid_search = GridSearchCV(model, param_grid=params, refit=True, scoring='roc_auc_ovr', n_jobs=-1, cv=5, verbose=3)
 
 start_time = timer(None)
 grid_search.fit(X_train, y_train)
 timer(start_time)
 
-#print(grid_search.best_estimator_)
+print(grid_search.best_estimator_)
 
-#best_params = grid_search.best_params_
+best_params = grid_search.best_params_
 
 # Print the best parameters
 print(best_params, '\n')
@@ -57,7 +59,8 @@ best_params = {
     "learning_rate": 0.05, 
     "max_depth": 4, 
     "min_child_weight": 7, 
-    "objective": 'multi:softmax'
+    "objective": 'multi:softmax',
+    "subsample": 0.8
 }
 
 classifier = XGBClassifier(**best_params)
