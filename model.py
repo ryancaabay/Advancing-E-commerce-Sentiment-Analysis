@@ -15,7 +15,6 @@ params={
     "subsample": [0.5, 0.6, 0.7, 0.8, 0.9]
 }
 
-
 def timer(start_time=None):
     if not start_time:
         start_time = datetime.now()
@@ -25,14 +24,11 @@ def timer(start_time=None):
         tmin, tsec = divmod(temp_sec, 60)
         print('\nTime taken: %i hours %i minutes and %s seconds.\n' % (thour, tmin, round(tsec, 2)))
 
-
 data = pd.read_csv('dataset/reviews_preprocessed.csv')
 data = data.drop(['review'], axis='columns')
 
-
 X = data.drop(columns=['sentiment'])
 y = data['sentiment']
-
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.2)
 

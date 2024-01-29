@@ -11,13 +11,8 @@ model = AutoModelForSequenceClassification.from_pretrained(model_name)
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 classifier = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)
 
-
 def process_user_review():
-    #sentiment = ''
-    #confidence = 0
-
     user_review_value = user_review_text.get("1.0",'end-1c')
-    #sentiment_mapping = {'negative': 0, 'neutral': 1, 'positive': 2}
 
     for result in classifier(user_review_value, truncation='longest_first', max_length=512):
         sentiment = [result['label']]
@@ -25,14 +20,12 @@ def process_user_review():
     
     return sentiment, confidence
 
-
 def process_features():
     upvotes_value = int(upvotes_entry.get())
     total_votes_value = int(total_votes_entry.get())
     rating_value = int(rating_entry.get())
 
     return upvotes_value, total_votes_value, rating_value
-
 
 def predict():
     sentiment, confidence = process_user_review()
@@ -78,10 +71,7 @@ rating_label.grid(row=3, column=0, sticky=E)
 rating_entry = Entry(window, width=10)
 rating_entry.grid(row=3, column=1, sticky=W)
 
-
-# Add a button to trigger the prediction
 predict_button = Button(window, text="Predict", command=predict)
 predict_button.grid(row=4, column=2, padx=10, pady=10)
 
-# Run the tkinter event loop
 window.mainloop()
