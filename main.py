@@ -4,7 +4,8 @@ from transformers import pipeline
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from model import saved_model
 from sklearn.model_selection import cross_val_score
-    
+
+
 model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
 model = AutoModelForSequenceClassification.from_pretrained(model_name)
 tokenizer = AutoTokenizer.from_pretrained(model_name)
