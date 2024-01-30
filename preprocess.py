@@ -23,4 +23,6 @@ for result in classifier(df['review'].tolist(), truncation='longest_first', max_
     sentiment.append(sentiment_mapping[result['label']])
     confidence.append(result['score'])
 
+df['sentiment'] = sentiment
+df['confidence'] = confidence
 df.to_csv('dataset/reviews_preprocessed.csv', index=False)
