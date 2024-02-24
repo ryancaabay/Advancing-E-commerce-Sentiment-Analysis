@@ -44,4 +44,3 @@ y_pred = saved_model.predict(X)
 new_data['review'] = reviews  
 new_data['comparison_sentiment'] = y_pred
 new_data.to_csv('dataset/second.csv', index=False)
-
