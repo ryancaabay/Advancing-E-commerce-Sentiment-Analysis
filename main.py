@@ -49,6 +49,9 @@ class System:
         self.single_row = pd.DataFrame(self.X.iloc[0]).transpose()
         self.y_pred = self.current_system_model.predict(self.single_row)
 
+        #print(self.current_system_model)
+        #print(self.single_row)
+
         self.prediction_label = Label(window, text="Prediction: " + self.sentiment_mapping[self.y_pred[0]])
         self.prediction_label.grid(row=5, column=0, columnspan=10)
 

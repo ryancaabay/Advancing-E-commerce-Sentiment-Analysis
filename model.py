@@ -140,7 +140,7 @@ def train_xgboost_model():
                                                 "subsample": [0.5, 0.6, 0.7, 0.8, 0.9]
                                             }, 
                                refit=True, scoring='roc_auc_ovr', n_jobs=-1, cv=5, verbose=3)
-    
+
     preset = {
                 "colsample_bytree": 0.5, 
                 "gamma": 0.4, 
@@ -154,6 +154,7 @@ def train_xgboost_model():
     xgb = XGBoost(xgb_model)
     xgb.split_data(data, X, y)
     xgb.search_best_params(grid_search)
+    print(xgb.best_params)
     #xgb.set_best_params(preset)
     print(' ')
     xgb.classify_sentiment()
