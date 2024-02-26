@@ -102,11 +102,13 @@ def preprocess_dataset():
     print('\n\tDefine the range of rows to be used in the dataset\n')
     initial_row = int(input('\t\tEnter the initial row: '))
     final_row = int(input('\t\tEnter the final row: '))
+    columns_to_drop = ['Id', 'ProductId', 'UserId', 'ProfileName', 'Time', 'Summary']
+    columns_to_rename = {'Text': 'review', 'Score': 'rating', 'HelpfulnessNumerator': 'upvotes', 'HelpfulnessDenominator': 'total_votes'}
     print(' ')
 
     df = Dataset(dataframe)
-    df.drop_columns(columns_to_drop = ['Id', 'ProductId', 'UserId', 'ProfileName', 'Time', 'Summary'])
-    df.rename_columns(columns_to_rename = {'Text': 'review', 'Score': 'rating', 'HelpfulnessNumerator': 'upvotes', 'HelpfulnessDenominator': 'total_votes'})
+    df.drop_columns(columns_to_drop)
+    df.rename_columns(columns_to_rename)
     df.define_row_count(initial_row, final_row)
 
     return df
@@ -114,9 +116,12 @@ def preprocess_dataset():
 
 def generate_bert_embeddings(df):
     bert_model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
+    sentiment_mapping = {'negative': 0, 'neutral': 1, 'positive': 2}
+    sentiment = []
+    confidence = []
 
     roberta = BERT(bert_model_name)
-    roberta.append_bert_embeddings(df.dataframe, {'negative': 0, 'neutral': 1, 'positive': 2}, [], [])
+    roberta.append_bert_embeddings(df.dataframe, sentiment_mapping, sentiment, confidence)
     df.save_csv()
 
 
@@ -127,21 +132,17 @@ def train_xgboost_model():
     X = data.drop(columns=['sentiment'])
     y = data['sentiment']
 
-    xgb_model = XGBClassifier()
-
-    grid_search = GridSearchCV(xgb_model, 
-                               param_grid = {
-                                                "objective": ['multi:softmax'],
-                                                "learning_rate": [0.05, 0.10, 0.15, 0.20, 0.25, 0.30],
-                                                "max_depth": [3, 4, 5, 6, 8, 10, 12, 15],
-                                                "min_child_weight": [1, 3, 5, 7],
-                                                "gamma": [0.0, 0.1, 0.2 , 0.3, 0.4],
-                                                "colsample_bytree": [0.3, 0.4, 0.5 , 0.7],
-                                                "subsample": [0.5, 0.6, 0.7, 0.8, 0.9]
-                                            }, 
-                               refit=True, scoring='roc_auc_ovr', n_jobs=-1, cv=5, verbose=3)
-
-    preset = {
+    params = {
+                "objective": ['multi:softmax'],
+                "learning_rate": [0.05, 0.10, 0.15, 0.20, 0.25, 0.30],
+                "max_depth": [3, 4, 5, 6, 8, 10, 12, 15],
+                "min_child_weight": [1, 3, 5, 7],
+                "gamma": [0.0, 0.1, 0.2 , 0.3, 0.4],
+                "colsample_bytree": [0.3, 0.4, 0.5 , 0.7],
+                "subsample": [0.5, 0.6, 0.7, 0.8, 0.9]
+             } 
+    
+    params_preset = {
                 "colsample_bytree": 0.5, 
                 "gamma": 0.4, 
                 "learning_rate": 0.05, 
@@ -150,12 +151,16 @@ def train_xgboost_model():
                 "objective": 'multi:softmax',
                 "subsample": 0.8
              }
+    
+    xgb_model = XGBClassifier()
+
+    grid_search = GridSearchCV(xgb_model, param_grid = params, refit=True, scoring='roc_auc_ovr', n_jobs=-1, cv=5, verbose=3)
 
     xgb = XGBoost(xgb_model)
     xgb.split_data(data, X, y)
     xgb.search_best_params(grid_search)
     print(xgb.best_params)
-    #xgb.set_best_params(preset)
+    #xgb.set_best_params(params_preset)
     print(' ')
     xgb.classify_sentiment()
     xgb.save_model()
@@ -191,8 +196,8 @@ def display_evaluation_metrics():
     print('\tTrain F1 Score: ', f1_score(y_train, y_train_pred, average='weighted'))
     print('\tTest F1 Score: ', f1_score(y_test, y_pred, average='weighted'), '\n')
 
-    score = cross_val_score(current_model, X, y, cv=10)
-    print('\tCross-Validation Score: ', score.mean())
+    cv_score = cross_val_score(current_model, X, y, cv=10)
+    print('\tCross-Validation Score: ', cv_score.mean())
 
     plot_importance(current_model)
     plt.show()
