@@ -1,3 +1,5 @@
+print("\n\nLoading system...\n\n")
+
 import os
 import joblib
 import pandas as pd
@@ -97,9 +99,9 @@ class XGBoost:
 
 def preprocess_dataset():
     dataframe = pd.read_csv('reviews.csv')
-    print('\nDefine the range of rows to be used in the dataset\n')
-    initial_row = int(input('\tEnter the initial row: '))
-    final_row = int(input('\tEnter the final row: '))
+    print('\n\tDefine the range of rows to be used in the dataset\n')
+    initial_row = int(input('\t\tEnter the initial row: '))
+    final_row = int(input('\t\tEnter the final row: '))
     print(' ')
 
     df = Dataset(dataframe)
@@ -119,7 +121,7 @@ def generate_bert_embeddings(df):
 
 
 def train_xgboost_model():
-    data_name = input('\nEnter the file name of the dataset to train XGBoost with (Hint: file_name.csv): ')
+    data_name = input('\n\tEnter the file name of the dataset to train XGBoost with (Hint: file_name.csv): ')
     print(' ')
     data = pd.read_csv(f'dataset/{data_name}').drop(['review'], axis='columns')
     X = data.drop(columns=['sentiment'])
@@ -161,8 +163,8 @@ def train_xgboost_model():
 
 
 def display_evaluation_metrics():
-    model_name = input('\nEnter the file name of the model to be evaluated (Hint: file_name.pkl): ')
-    model_folder = input('\nEnter the name of the folder where variables are to be retrieved: ')
+    model_folder = input('\n\tEnter the name of the folder where model and variables are to be retrieved: ')
+    model_name = input('\n\tEnter the file name of the model to be evaluated (Hint: file_name.pkl): ')
 
     current_model = joblib.load(f'model/{model_folder}/{model_name}')
     X = joblib.load(f'model/{model_folder}/X.pkl')
@@ -175,7 +177,7 @@ def display_evaluation_metrics():
     y_train_pred = current_model.predict(X_train)
     y_pred = current_model.predict(X_test)
 
-    print('\nHere are the evaluation metrics for the current model\n')
+    print('\n\nHere are the evaluation metrics for the current model\n')
     print('\tTrain Accuracy Score: ', accuracy_score(y_train, y_train_pred))
     print('\tTest Accuracy Score: ', accuracy_score(y_test, y_pred,), '\n')
 
@@ -189,13 +191,15 @@ def display_evaluation_metrics():
     print('\tTest F1 Score: ', f1_score(y_test, y_pred, average='weighted'), '\n')
 
     score = cross_val_score(current_model, X, y, cv=10)
-    print('\tCross-Validation Score: ', score.mean(), '\n')
+    print('\tCross-Validation Score: ', score.mean())
 
     plot_importance(current_model)
     plt.show()
 
 
 if __name__ == "__main__":
+        print("\n\nSystem loaded successfully...")
+        
         get_user_confirmation = input(f"\nDo you want to preprocess_dataset() and generate_bert_embeddings()? (yes/no): ")
         if get_user_confirmation.lower() == 'yes':
             df = preprocess_dataset()
@@ -209,3 +213,4 @@ if __name__ == "__main__":
         if get_user_confirmation.lower() == 'yes':
             display_evaluation_metrics()
 
+        print("\n\nExiting system...\n\n")
