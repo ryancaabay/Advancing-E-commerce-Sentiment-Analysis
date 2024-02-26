@@ -35,11 +35,14 @@ class System:
         self.sentiment, self.confidence = self.process_user_review()
         self.upvotes_value, self.total_votes_value, self.rating_value = self.process_features()
 
-        self.data = pd.DataFrame({'upvotes': [self.upvotes_value], 
-                            'total_votes': [self.total_votes_value], 
-                            'rating': [self.rating_value], 
-                            'sentiment': [self.sentiment], 
-                            'confidence': [self.confidence]})
+        self.data = pd.DataFrame({
+                                'upvotes': [self.upvotes_value], 
+                                'total_votes': [self.total_votes_value], 
+                                'rating': [self.rating_value], 
+                                'sentiment': [self.sentiment], 
+                                'confidence': [self.confidence]
+                                })
+        
         #print('/n' + self.data + '/n')
         self.sentiment_mapping = {0 : 'Negative', 1 : 'Neutral', 2 : 'Positive'}
         
