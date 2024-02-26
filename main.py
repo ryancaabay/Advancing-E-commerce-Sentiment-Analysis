@@ -19,7 +19,7 @@ class System:
         self.user_review_value = user_review_text.get("1.0",'end-1c')
 
         for result in self.classifier(self.user_review_value, truncation='longest_first', max_length=512):
-            self.confidence = int(result['score'])
+            self.confidence = result['score']
             self.sentiment = result['label']
         
         return self.sentiment, self.confidence
@@ -40,7 +40,7 @@ class System:
                             'rating': [self.rating_value], 
                             'sentiment': [self.sentiment], 
                             'confidence': [self.confidence]})
-        
+        print(self.data)
         self.sentiment_mapping = {0 : 'Negative', 1 : 'Neutral', 2 : 'Positive'}
         
         self.X = self.data.drop(columns=['sentiment'])
