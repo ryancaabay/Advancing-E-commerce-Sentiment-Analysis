@@ -52,6 +52,7 @@ class System:
         self.prediction_label = Label(window, text="Prediction: " + self.sentiment_mapping[self.y_pred[0]])
         self.prediction_label.grid(row=5, column=0, columnspan=10)
 
+
 if __name__ == "__main__":
     system = System()
 
