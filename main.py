@@ -1,3 +1,5 @@
+print("\n\nLoading system...\n\n")
+
 import joblib
 import pandas as pd
 from tkinter import *
@@ -80,3 +82,5 @@ if __name__ == "__main__":
     predict_button.grid(row=4, column=2, padx=10, pady=10)
 
     window.mainloop()
+
+    print("\n\nSystem exited successfully...\n\n")
