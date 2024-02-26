@@ -7,7 +7,6 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
 class System:
     def __init__(self):
-        self.current_system_model = joblib.load('model/main/xgb_model.pkl')
         self.model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
         self.model = AutoModelForSequenceClassification.from_pretrained(self.model_name)
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
@@ -30,6 +29,7 @@ class System:
         return self.upvotes_value, self.total_votes_value, self.rating_value
     
     def predict(self):
+        self.current_system_model = joblib.load('model/main/xgb_model.pkl')
         self.sentiment, self.confidence = self.process_user_review()
         self.upvotes_value, self.total_votes_value, self.rating_value = self.process_features()
 
