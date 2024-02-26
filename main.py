@@ -40,7 +40,7 @@ class System:
                             'rating': [self.rating_value], 
                             'sentiment': [self.sentiment], 
                             'confidence': [self.confidence]})
-        print(self.data)
+        #print('/n' + self.data + '/n')
         self.sentiment_mapping = {0 : 'Negative', 1 : 'Neutral', 2 : 'Positive'}
         
         self.X = self.data.drop(columns=['sentiment'])
@@ -48,9 +48,6 @@ class System:
         
         self.single_row = pd.DataFrame(self.X.iloc[0]).transpose()
         self.y_pred = self.current_system_model.predict(self.single_row)
-
-        #print(self.current_system_model)
-        #print(self.single_row)
 
         self.prediction_label = Label(window, text="Prediction: " + self.sentiment_mapping[self.y_pred[0]])
         self.prediction_label.grid(row=5, column=0, columnspan=10)
@@ -86,4 +83,4 @@ if __name__ == "__main__":
 
     window.mainloop()
 
-    print("\n\nSystem exited successfully...\n\n")
+    print("\n\nSystem exited...\n\n")
