@@ -7,11 +7,11 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
 class System:
     def __init__(self):
+        self.current_system_model = joblib.load('model/main/xgb_model.pkl')
         self.model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
         self.model = AutoModelForSequenceClassification.from_pretrained(self.model_name)
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
         self.classifier = pipeline("sentiment-analysis", model=self.model, tokenizer=self.tokenizer)
-        self.current_system_model = joblib.load('model/main/xgb_model.pkl')
 
     def process_user_review(self):
         self.user_review_value = user_review_text.get("1.0",'end-1c')
