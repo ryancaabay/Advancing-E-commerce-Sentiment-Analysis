@@ -82,12 +82,17 @@ class XGBoost:
         self.set_model_name = input('\nEnter the name of the trained model to be saved: ')
         if not os.path.exists('model'):
             os.makedirs('model')
-        joblib.dump(self.classifier, f'model/{self.set_model_name}.pkl')
-
-    def evaluate_model(self, current_model):
-        self.current_model = current_model
-        self.y_train_pred = self.current_model.predict(self.X_train)
-        self.y_pred = self.current_model.predict(self.X_test)
+        self.set_folder_name = input('\nEnter the name of the folder where the saved model and variables are to be stored: ')
+        if not os.path.exists(f'model/{self.set_folder_name}'):
+            os.makedirs(f'model/{self.set_folder_name}')
+        
+        joblib.dump(self.classifier, f'model/{self.set_folder_name}/{self.set_model_name}.pkl')
+        joblib.dump(self.X, (f'model/{self.set_folder_name}/X.pkl'))
+        joblib.dump(self.y, (f'model/{self.set_folder_name}/y.pkl'))
+        joblib.dump(self.X_train, (f'model/{self.set_folder_name}/X_train.pkl'))
+        joblib.dump(self.X_test, (f'model/{self.set_folder_name}/X_test.pkl'))
+        joblib.dump(self.y_train, (f'model/{self.set_folder_name}/y_train.pkl'))
+        joblib.dump(self.y_test, (f'model/{self.set_folder_name}/y_test.pkl'))
 
 
 def preprocess_dataset():
@@ -114,7 +119,7 @@ def generate_bert_embeddings(df):
 
 
 def train_xgboost_model():
-    data_name = input('\nEnter the file name of the dataset to train XGBoost with: ')
+    data_name = input('\nEnter the file name of the dataset to train XGBoost with (Hint: file_name.csv): ')
     print(' ')
     data = pd.read_csv(f'dataset/{data_name}').drop(['review'], axis='columns')
     X = data.drop(columns=['sentiment'])
@@ -155,33 +160,52 @@ def train_xgboost_model():
     return xgb
 
 
-def display_evaluation_metrics(xgb):
-    model_name = input('\nEnter the file name of the model to be evaluated: ')
-    current_model = joblib.load(f'model/{model_name}')
-    xgb.evaluate_model(current_model)
+def display_evaluation_metrics():
+    model_name = input('\nEnter the file name of the model to be evaluated (Hint: file_name.pkl): ')
+    model_folder = input('\nEnter the name of the folder where variables are to be retrieved: ')
+
+    current_model = joblib.load(f'model/{model_folder}/{model_name}')
+    X = joblib.load(f'model/{model_folder}/X.pkl')
+    y = joblib.load(f'model/{model_folder}/y.pkl')
+    X_train = joblib.load(f'model/{model_folder}/X_train.pkl')
+    X_test = joblib.load(f'model/{model_folder}/X_test.pkl')
+    y_train = joblib.load(f'model/{model_folder}/y_train.pkl')
+    y_test = joblib.load(f'model/{model_folder}/y_test.pkl')
+
+    y_train_pred = current_model.predict(X_train)
+    y_pred = current_model.predict(X_test)
 
     print('\nHere are the evaluation metrics for the current model\n')
-    print('\tTrain Accuracy Score: ', accuracy_score(xgb.y_train, xgb.y_train_pred))
-    print('\tTest Accuracy Score: ', accuracy_score(xgb.y_test, xgb.y_pred,), '\n')
+    print('\tTrain Accuracy Score: ', accuracy_score(y_train, y_train_pred))
+    print('\tTest Accuracy Score: ', accuracy_score(y_test, y_pred,), '\n')
 
-    print('\tTrain Precision Score: ', precision_score(xgb.y_train, xgb.y_train_pred, average='weighted'))
-    print('\tTest Precision Score: ', precision_score(xgb.y_test, xgb.y_pred, average='weighted'), '\n')
+    print('\tTrain Precision Score: ', precision_score(y_train, y_train_pred, average='weighted'))
+    print('\tTest Precision Score: ', precision_score(y_test,y_pred, average='weighted'), '\n')
 
-    print('\tTrain Recall Score: ', recall_score(xgb.y_train, xgb.y_train_pred, average='weighted'))
-    print('\tTest Recall Score: ', recall_score(xgb.y_test, xgb.y_pred, average='weighted'), '\n')
+    print('\tTrain Recall Score: ', recall_score(y_train, y_train_pred, average='weighted'))
+    print('\tTest Recall Score: ', recall_score(y_test,y_pred, average='weighted'), '\n')
 
-    print('\tTrain F1 Score: ', f1_score(xgb.y_train, xgb.y_train_pred, average='weighted'))
-    print('\tTest F1 Score: ', f1_score(xgb.y_test, xgb.y_pred, average='weighted'), '\n')
+    print('\tTrain F1 Score: ', f1_score(y_train, y_train_pred, average='weighted'))
+    print('\tTest F1 Score: ', f1_score(y_test, y_pred, average='weighted'), '\n')
 
-    score = cross_val_score(xgb.current_model, xgb.X, xgb.y, cv=10)
+    score = cross_val_score(current_model, X, y, cv=10)
     print('\tCross-Validation Score: ', score.mean(), '\n')
 
-    plot_importance(xgb.current_model)
+    plot_importance(current_model)
     plt.show()
 
 
 if __name__ == "__main__":
-    df = preprocess_dataset()
-    generate_bert_embeddings(df)
-    xgb = train_xgboost_model()
-    display_evaluation_metrics(xgb)
+        get_user_confirmation = input(f"\nDo you want to preprocess_dataset() and generate_bert_embeddings()? (yes/no): ")
+        if get_user_confirmation.lower() == 'yes':
+            df = preprocess_dataset()
+            generate_bert_embeddings(df)
+        
+        get_user_confirmation = input("\nDo you want to train_xgboost_model()? (yes/no): ")
+        if get_user_confirmation.lower() == 'yes':
+            train_xgboost_model()
+        
+        get_user_confirmation = input(f"\nDo you want to display_evaluation_metrics()? (yes/no): ")
+        if get_user_confirmation.lower() == 'yes':
+            display_evaluation_metrics()
+

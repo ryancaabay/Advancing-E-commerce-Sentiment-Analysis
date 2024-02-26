@@ -14,7 +14,7 @@ model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
 model = AutoModelForSequenceClassification.from_pretrained(model_name)
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 classifier = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)
-current_system_model = joblib.load('model/xgb_model.pkl')
+current_system_model = joblib.load('model/main/xgb_model.pkl')
 
 confidence = []
 sentiment_mapping = {'negative': 0, 'neutral': 1, 'positive': 2}
