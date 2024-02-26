@@ -196,8 +196,8 @@ def display_evaluation_metrics():
     print('\tTrain F1 Score: ', f1_score(y_train, y_train_pred, average='weighted'))
     print('\tTest F1 Score: ', f1_score(y_test, y_pred, average='weighted'), '\n')
 
-    cv_score = cross_val_score(current_model, X, y, cv=10)
-    print('\tCross-Validation Score: ', cv_score.mean())
+    #cv_score = cross_val_score(current_model, X, y, cv=10)
+    print('\tCross-Validation Score: ', cross_val_score(current_model, X, y, cv=10).mean())
 
     plot_importance(current_model)
     plt.show()
