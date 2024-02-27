@@ -206,21 +206,21 @@ def display_evaluation_metrics():
 
 
 if __name__ == "__main__":
-    print("\n\nSystem loaded successfully...\n")
+    print("\n\nSystem loaded successfully...")
     time.sleep(1)
 
     start_time = time.time()
     
-    get_user_confirmation = input(f"\nDo you want to preprocess_dataset() and generate_bert_embeddings()? (yes/no): ")
+    get_user_confirmation = input(f"\n\nDo you want to preprocess_dataset() and generate_bert_embeddings()? (yes/no): ")
     if get_user_confirmation.lower() == 'yes':
         df = preprocess_dataset()
         generate_bert_embeddings(df)
 
-    get_user_confirmation = input("\nDo you want to train_xgboost_model()? (yes/no): ")
+    get_user_confirmation = input("\n\nDo you want to train_xgboost_model()? (yes/no): ")
     if get_user_confirmation.lower() == 'yes':
         train_xgboost_model()
 
-    get_user_confirmation = input(f"\nDo you want to display_evaluation_metrics()? (yes/no): ")
+    get_user_confirmation = input(f"\n\nDo you want to display_evaluation_metrics()? (yes/no): ")
     if get_user_confirmation.lower() == 'yes':
         display_evaluation_metrics()
 
@@ -229,7 +229,7 @@ if __name__ == "__main__":
     elapsed_time = end_time - start_time
     hours, remainder = divmod(elapsed_time, 3600)
     minutes, seconds = divmod(remainder, 60)
-    print(f"\nTime elapsed: {str(int(hours)).zfill(2)}:{str(int(minutes)).zfill(2)}:{str(int(seconds)).zfill(2)}\n\n")
+    print(f"\n\nTime elapsed: {str(int(hours)).zfill(2)}:{str(int(minutes)).zfill(2)}:{str(int(seconds)).zfill(2)}")
 
     print("\n\nExiting system...\n\n")
     time.sleep(1)
