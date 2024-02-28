@@ -17,94 +17,86 @@ class Dataset:
         self.dataframe = dataframe
 
     def drop_columns(self, columns_to_drop):
-        self.columns_to_drop = columns_to_drop
-        self.dataframe = self.dataframe.drop(columns = self.columns_to_drop)
+        self.dataframe = self.dataframe.drop(columns = columns_to_drop)
     
     def rename_columns(self, columns_to_rename):
-        self.columns_to_rename = columns_to_rename
-        self.dataframe = self.dataframe.rename(columns = self.columns_to_rename)
+        self.dataframe = self.dataframe.rename(columns = columns_to_rename)
 
     def define_row_count(self, initial_row, final_row):  
-        self.initial_row = initial_row
-        self.final_row = final_row
-        self.dataframe = self.dataframe.iloc[self.initial_row:self.final_row]
+        self.dataframe = self.dataframe.iloc[initial_row:final_row]
     
-    def save_csv(self):
-        self.set_dataset_name = input('\n\nEnter the name of the preprocessed dataset to be saved: ')
+    def save_csv(self, dataset_name):
         if not os.path.exists('dataset'):
             os.makedirs('dataset')
-        self.dataframe.to_csv(f'dataset/{self.set_dataset_name}.csv', index=False)
+        self.dataframe.to_csv(os.path.join('dataset', f'{dataset_name}.csv'))
 
 
 class BERT:
     def __init__(self, model_name):
-        self.model_name = model_name
         self.model = AutoModelForSequenceClassification.from_pretrained(model_name)
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.classifier = pipeline("sentiment-analysis", model=self.model, tokenizer=self.tokenizer)
 
-    def append_bert_embeddings(self, dataframe, sentiment_mapping, sentiment, confidence):
-        self.dataframe = dataframe
-        self.sentiment_mapping = sentiment_mapping
-        self.confidence = confidence
-        self.sentiment = sentiment
+    def append_bert_embeddings(self, dataframe, sentiment_mapping):
+        sentiment = []
+        confidence = []
 
-        for result in self.classifier(self.dataframe['review'].tolist(), truncation='longest_first', max_length=512):
-            self.confidence.append(result['score'])
-            self.sentiment.append(self.sentiment_mapping[result['label']])
+        for result in self.classifier(dataframe['review'].tolist(), truncation='longest_first', max_length=512):
+            confidence.append(result['score'])
+            sentiment.append(sentiment_mapping[result['label']])
 
-        self.dataframe['confidence'] = self.confidence
-        self.dataframe['sentiment'] = self.sentiment
+        dataframe['confidence'] = confidence
+        dataframe['sentiment'] = sentiment
 
 
 class XGBoost:
-    def __init__(self, model):
-        self.model = model
+    def __init__(self, classifier):
+        self.classifier = classifier
+        self.best_params = None
     
-    def split_data(self, data, X, y):
-        self.data = data
+    def split_data(self, X, y):
         self.X = X
         self.y = y
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=.2)
 
     def search_best_params(self, grid_search):
-        self.grid_search = grid_search
-        self.grid_search.fit(self.X_train, self.y_train)
-        self.best_params = self.grid_search.best_params_
+        grid_search.fit(self.X_train, self.y_train)
+        self.best_params = grid_search.best_params_
 
     def set_best_params(self, best_params):
         self.best_params = best_params
     
     def classify_sentiment(self):
-        self.classifier = self.model
         self.classifier.set_params(**self.best_params)
         self.classifier.fit(self.X_train, self.y_train)
 
-    def save_model(self):
-        self.set_model_name = input('\nEnter the name of the trained model to be saved: ')
+    def save_model(self, folder_name, model_name):
         if not os.path.exists('model'):
             os.makedirs('model')
-        self.set_folder_name = input('\nEnter the name of the folder where the saved model and variables are to be stored: ')
-        if not os.path.exists(f'model/{self.set_folder_name}'):
-            os.makedirs(f'model/{self.set_folder_name}')
+        if not os.path.exists(f'model/{folder_name}'):
+            os.makedirs(f'model/{folder_name}')
         
-        joblib.dump(self.classifier, f'model/{self.set_folder_name}/{self.set_model_name}.pkl')
-        joblib.dump(self.X, (f'model/{self.set_folder_name}/X.pkl'))
-        joblib.dump(self.y, (f'model/{self.set_folder_name}/y.pkl'))
-        joblib.dump(self.X_train, (f'model/{self.set_folder_name}/X_train.pkl'))
-        joblib.dump(self.X_test, (f'model/{self.set_folder_name}/X_test.pkl'))
-        joblib.dump(self.y_train, (f'model/{self.set_folder_name}/y_train.pkl'))
-        joblib.dump(self.y_test, (f'model/{self.set_folder_name}/y_test.pkl'))
+        joblib.dump(self.classifier, f'model/{folder_name}/{model_name}.pkl')
+        joblib.dump(self.X, (f'model/{folder_name}/X.pkl'))
+        joblib.dump(self.y, (f'model/{folder_name}/y.pkl'))
+        joblib.dump(self.X_train, (f'model/{folder_name}/X_train.pkl'))
+        joblib.dump(self.X_test, (f'model/{folder_name}/X_test.pkl'))
+        joblib.dump(self.y_train, (f'model/{folder_name}/y_train.pkl'))
+        joblib.dump(self.y_test, (f'model/{folder_name}/y_test.pkl'))
 
 
 def preprocess_dataset():
     dataframe = pd.read_csv('reviews.csv')
-    print('\n\tDefine the range of rows to be used in the dataset\n')
-    time.sleep(1)
-    initial_row = int(input('\t\tEnter the initial row: '))
-    final_row = int(input('\t\tEnter the final row: '))
     columns_to_drop = ['Id', 'ProductId', 'UserId', 'ProfileName', 'Time', 'Summary']
     columns_to_rename = {'Text': 'review', 'Score': 'rating', 'HelpfulnessNumerator': 'upvotes', 'HelpfulnessDenominator': 'total_votes'}
+
+    print('\n\tDefine the range of rows to be used in the dataset\n')
+
+    time.sleep(1)
+
+    initial_row = int(input('\t\tEnter the initial row: '))
+    final_row = int(input('\t\tEnter the final row: '))
+
     print(' ')
 
     df = Dataset(dataframe)
@@ -118,20 +110,21 @@ def preprocess_dataset():
 def generate_bert_embeddings(df):
     bert_model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
     sentiment_mapping = {'negative': 0, 'neutral': 1, 'positive': 2}
-    sentiment = []
-    confidence = []
+    set_dataset_name = input('\n\nEnter the name of the preprocessed dataset to be saved: ')
 
     roberta = BERT(bert_model_name)
-    roberta.append_bert_embeddings(df.dataframe, sentiment_mapping, sentiment, confidence)
-    df.save_csv()
+    roberta.append_bert_embeddings(df.dataframe, sentiment_mapping)
+    df.save_csv(set_dataset_name)
 
 
 def train_xgboost_model():
-    data_name = input('\n\tEnter the file name of the dataset to train XGBoost with (Hint: file_name.csv): ')
+    dataset_name = input('\n\tEnter the file name of the dataset to train XGBoost with (Hint: file_name.csv): ')
+
     print(' ')
-    data = pd.read_csv(f'dataset/{data_name}').drop(['review'], axis='columns')
-    X = data.drop(columns=['sentiment'])
-    y = data['sentiment']
+
+    dataframe = pd.read_csv(f'dataset/{dataset_name}').drop(['review'], axis='columns')
+    X = dataframe.drop(columns=['sentiment'])
+    y = dataframe['sentiment']
 
     params = {
                 "objective": ['multi:softmax'],
@@ -154,20 +147,23 @@ def train_xgboost_model():
              }
     
     xgb_model = XGBClassifier()
-
     grid_search = GridSearchCV(xgb_model, param_grid = params, refit=True, scoring='roc_auc_ovr', n_jobs=-1, cv=5, verbose=3)
 
     xgb = XGBoost(xgb_model)
-    xgb.split_data(data, X, y)
+    xgb.split_data(X, y)
     xgb.search_best_params(grid_search)
+    #xgb.set_best_params(params_preset)
+
     print(' ')
     print(xgb.best_params)
-    #xgb.set_best_params(params_preset)
     print(' ')
-    xgb.classify_sentiment()
-    xgb.save_model()
 
-    return xgb
+    xgb.classify_sentiment()
+
+    set_model_name = input('\nEnter the name of the trained model to be saved: ')
+    set_folder_name = input('\nEnter the name of the folder where the saved model and variables are to be stored: ')
+
+    xgb.save_model(set_model_name, set_folder_name)
 
 
 def display_evaluation_metrics():
@@ -207,6 +203,7 @@ def display_evaluation_metrics():
 
 if __name__ == "__main__":
     print("\n\nSystem loaded successfully...")
+    
     time.sleep(1)
 
     start_time = time.time()
@@ -229,7 +226,9 @@ if __name__ == "__main__":
     elapsed_time = end_time - start_time
     hours, remainder = divmod(elapsed_time, 3600)
     minutes, seconds = divmod(remainder, 60)
+
     print(f"\n\nTime elapsed: {str(int(hours)).zfill(2)}:{str(int(minutes)).zfill(2)}:{str(int(seconds)).zfill(2)}")
 
     print("\n\nExiting system...\n\n")
+
     time.sleep(1)
