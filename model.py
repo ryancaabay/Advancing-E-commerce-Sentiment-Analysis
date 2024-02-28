@@ -1,4 +1,4 @@
-print("\n\nLoading system...\n\n")
+print("\n\nLoading system...")
 
 import os
 import time
@@ -97,8 +97,6 @@ def preprocess_dataset():
     initial_row = int(input('\t\tEnter the initial row: '))
     final_row = int(input('\t\tEnter the final row: '))
 
-    print(' ')
-
     df = Dataset(dataframe)
     df.drop_columns(columns_to_drop)
     df.rename_columns(columns_to_rename)
@@ -110,7 +108,9 @@ def preprocess_dataset():
 def generate_bert_embeddings(df):
     bert_model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
     sentiment_mapping = {'negative': 0, 'neutral': 1, 'positive': 2}
-    set_dataset_name = input('\n\nEnter the name of the preprocessed dataset to be saved: ')
+    set_dataset_name = input('\nEnter the name of the preprocessed dataset to be saved: ')
+
+    print('\nGenerating BERT embeddings, please wait...\n\n')
 
     roberta = BERT(bert_model_name)
     roberta.append_bert_embeddings(df.dataframe, sentiment_mapping)
@@ -208,17 +208,17 @@ if __name__ == "__main__":
 
     start_time = time.time()
     
-    get_user_confirmation = input(f"\n\nDo you want to preprocess_dataset() and generate_bert_embeddings()? (yes/no): ")
-    if get_user_confirmation.lower() == 'yes':
+    get_user_confirmation = input("\n\nDo you want to preprocess a dataset derived from the main dataset and generate its BERT embeddings? (y/n): ")
+    if get_user_confirmation.lower() == 'y':
         df = preprocess_dataset()
         generate_bert_embeddings(df)
 
-    get_user_confirmation = input("\n\nDo you want to train_xgboost_model()? (yes/no): ")
-    if get_user_confirmation.lower() == 'yes':
+    get_user_confirmation = input("\n\nDo you want to train an XGBoost model on a specific dataset? (y/n): ")
+    if get_user_confirmation.lower() == 'y':
         train_xgboost_model()
 
-    get_user_confirmation = input(f"\n\nDo you want to display_evaluation_metrics()? (yes/no): ")
-    if get_user_confirmation.lower() == 'yes':
+    get_user_confirmation = input("\n\nDo you want to display the evaluation metrics of a specific system model? (y/n): ")
+    if get_user_confirmation.lower() == 'y':
         display_evaluation_metrics()
 
     end_time = time.time()
