@@ -5,14 +5,14 @@ import time
 import joblib
 import pandas as pd
 import matplotlib.pyplot as plt
+from transformers import pipeline
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from xgboost import XGBClassifier, plot_importance
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score 
 from sklearn.model_selection import train_test_split, GridSearchCV, cross_val_score
-from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score 
 
-# to-do: remove punctuation, accent char, special char, etc.
-# to-do: feature engineer, polarity, subjectivity, etc.
-class Dataset: 
+
+class Dataset:
     def __init__(self, dataframe):
         self.dataframe = dataframe
 

@@ -3,9 +3,10 @@ print("\n\nLoading system...\n\n")
 import joblib
 import pandas as pd
 from tkinter import *
-from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
+from transformers import pipeline
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
-# to-do: prediction on certain keyword
+
 class System:
     def __init__(self):
         self.model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
