@@ -1,3 +1,13 @@
+# This Python console application is designed to:
+# - Define a Dataset class for handling datasets and preprocessing techniques
+# - Define a BERT class for handling model customization and embedding generation
+# - Define an XGBoost class for handling model customization, implementation, and evaluation
+# - Define a function for the preprocessing of dataset
+# - Define a function for the generation of BERT embeddings
+# - Define a function for the training of an XGBoost model
+# - Define a function for the evaluation of the trained model
+# - Define a main function to execute the application
+
 print("\n\nLoading system...")
 
 import os
@@ -17,13 +27,13 @@ class Dataset:
 
     def drop_columns(self, columns_to_drop):
         self.dataframe = self.dataframe.drop(columns = columns_to_drop)
-    
+
     def rename_columns(self, columns_to_rename):
         self.dataframe = self.dataframe.rename(columns = columns_to_rename)
 
     def define_row_count(self, initial_row, final_row):  
         self.dataframe = self.dataframe.iloc[initial_row:final_row]
-    
+
     def save_csv(self, dataset_name):
         if not os.path.exists('dataset'):
             os.makedirs('dataset')
@@ -52,7 +62,7 @@ class XGBoost:
     def __init__(self, classifier):
         self.classifier = classifier
         self.best_params = None
-    
+
     def split_data(self, X, y):
         self.X = X
         self.y = y
@@ -64,7 +74,7 @@ class XGBoost:
 
     def set_best_params(self, best_params):
         self.best_params = best_params
-    
+
     def classify_sentiment(self):
         self.classifier.set_params(**self.best_params)
         self.classifier.fit(self.X_train, self.y_train)
@@ -229,5 +239,5 @@ if __name__ == "__main__":
     print(f"\n\nTime elapsed: {str(int(hours)).zfill(2)}:{str(int(minutes)).zfill(2)}:{str(int(seconds)).zfill(2)}")
 
     print("\n\nExiting system...\n\n")
-
+    
     time.sleep(1)
