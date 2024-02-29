@@ -8,7 +8,7 @@
 # - Define a function for the evaluation of the trained model
 # - Define a main function to execute the application
 
-print("\n\nLoading system...")
+print("\n\nLoading system...\n\n")
 
 import os
 import time
@@ -235,8 +235,10 @@ if __name__ == "__main__":
     elapsed_time = end_time - start_time
     hours, remainder = divmod(elapsed_time, 3600)
     minutes, seconds = divmod(remainder, 60)
+    milliseconds = seconds % 1
+    seconds = seconds - milliseconds
 
-    print(f"\n\nTime elapsed: {str(int(hours)).zfill(2)}:{str(int(minutes)).zfill(2)}:{str(int(seconds)).zfill(2)}")
+    print(f"\n\nTime elapsed: {str(int(hours)).zfill(2)}:{str(int(minutes)).zfill(2)}:{str(int(seconds)).zfill(2)}.{str(int(milliseconds*100)).zfill(2)}")
 
     print("\n\nExiting system...\n\n")
     
