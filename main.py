@@ -1,3 +1,7 @@
+# This Python graphical user interface application is designed to:
+# - Define a System class for handling user inputs and prediction methods
+# - Define a main function to create an application window
+
 print("\n\nLoading system...\n\n")
 
 import joblib
