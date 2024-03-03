@@ -4,6 +4,40 @@ from PIL import Image
 import customtkinter as ctk
 from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
 
+class App(ctk.CTk):
+    def __init__(self):
+        super().__init__()
+
+        self.title("XGBERT")
+        self.geometry("1440x810")
+        self.resizable(False, False)
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure((0, 1), weight=1)
+        
+        self.tab_view = MyTabView(master=self, width=1400, height=700)
+        self.tab_view.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
+        
+        self.appearance_mode = ctk.StringVar(value="on")
+        self.appearance_switch = ctk.CTkSwitch(master=self, switch_width=40, text="Dark Mode", font=("Arial", 13), command=self.appearance, variable=self.appearance_mode, onvalue="on", offvalue="off")
+        self.appearance_switch.grid(row=1, column=0, padx=20, pady=(0, 40), sticky="ew")
+
+        self.update_idletasks()
+        width = self.winfo_screenwidth()
+        height = self.winfo_screenheight()
+        size = tuple(int(_) for _ in self.geometry().split('+')[0].split('x'))
+        x = width/2 - size[0]/2
+        y = height/2 - size[1]/2
+        self.geometry("%dx%d+%d+%d" % (size + (x, y)))
+
+    def appearance(self):
+        if self.appearance_mode.get() == "on":
+            ctk.set_appearance_mode("dark")
+            #ctk.set_default_color_theme("blue")
+
+        else:
+            ctk.set_appearance_mode("light")
+            #ctk.set_default_color_theme("green")
+
 
 class MyTabView(ctk.CTkTabview):
     def __init__(self, master, **kwargs):
@@ -157,41 +191,6 @@ class MyTabView(ctk.CTkTabview):
     def create_model_comparison_tab(self):
         self.label = ctk.CTkLabel(master=self.tab("Model Comparison"))
         self.label.grid(row=0, column=0, padx=20, pady=10)
-
-
-class App(ctk.CTk):
-    def __init__(self):
-        super().__init__()
-
-        self.title("XGBERT")
-        self.geometry("1440x810")
-        self.resizable(False, False)
-        self.grid_columnconfigure(0, weight=1)
-        self.grid_rowconfigure((0, 1), weight=1)
-        
-        self.tab_view = MyTabView(master=self, width=1400, height=700)
-        self.tab_view.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
-        
-        self.appearance_mode = ctk.StringVar(value="on")
-        self.appearance_switch = ctk.CTkSwitch(master=self, switch_width=40, text="Dark Mode", font=("Arial", 13), command=self.appearance, variable=self.appearance_mode, onvalue="on", offvalue="off")
-        self.appearance_switch.grid(row=1, column=0, padx=20, pady=(0, 40), sticky="ew")
-
-        self.update_idletasks()
-        width = self.winfo_screenwidth()
-        height = self.winfo_screenheight()
-        size = tuple(int(_) for _ in self.geometry().split('+')[0].split('x'))
-        x = width/2 - size[0]/2
-        y = height/2 - size[1]/2
-        self.geometry("%dx%d+%d+%d" % (size + (x, y)))
-
-    def appearance(self):
-        if self.appearance_mode.get() == "on":
-            ctk.set_appearance_mode("dark")
-            #ctk.set_default_color_theme("blue")
-
-        else:
-            ctk.set_appearance_mode("light")
-            #ctk.set_default_color_theme("green")
 
 
 def process_user_review():
