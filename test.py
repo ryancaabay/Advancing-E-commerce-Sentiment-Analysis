@@ -63,15 +63,36 @@ class MyTabView(ctk.CTkTabview):
         self.results_frame_label = ctk.CTkLabel(master=self.results_frame, text="Model Prediction and Evaluation Metrics", font=("Arial", 24))
         self.results_frame_label.grid(row=0, column=0, columnspan=3, padx=(0, 20), pady=(20, 0), sticky="ne")
 
+        self.result = Image.open("images/welcome.png")
+        self.result_image = ctk.CTkImage(light_image=self.result, size=(100, 100))
+        self.result_image_show = ctk.CTkLabel(master=self.results_frame, image=self.result_image, text="", bg_color="transparent")
+        self.result_image_show.grid(row=0, column=0, padx=(140, 0), pady=(120, 0), sticky="nw")
+        self.result_text = ctk.CTkLabel(master=self.results_frame, text="Hi there, input some review\n and I will try to predict it!", font=("Arial", 18), bg_color="transparent")
+        self.result_text.grid(row=0, column=0, padx=(80, 0), pady=(240, 0), sticky="nw")
+
+        #self.update_sentiment_display(1)
+    
+    def update_sentiment_display(self, value):
         self.happy = Image.open("images/happy.png")
         self.neutral = Image.open("images/neutral.png")
         self.sad = Image.open("images/sad.png")
 
-        self.happy_image = ctk.CTkImage(light_image=self.happy, size=(100, 100))
-        self.happy_image_show = ctk.CTkLabel(master=self.results_frame, image=self.happy_image, text="", bg_color="transparent")
-        self.happy_image_show.grid(row=0, column=0, padx=(140, 0), pady=(120, 0), sticky="nw")
-        self.happy_image_text = ctk.CTkLabel(master=self.results_frame, text="The model has predicted this \nstatement to be positive.", font=("Arial", 18), bg_color="transparent")
-        self.happy_image_text.grid(row=0, column=0, padx=(75, 0), pady=(240, 0), sticky="nw")
+        if value == 0:
+            self.result_image = ctk.CTkImage(light_image=self.sad, size=(100, 100))
+            self.result_text.configure(text="The model predicted the \nreview to be negative.")
+            self.result_text.grid_configure(row=0, column=0, padx=(90, 0), pady=(240, 0), sticky="nw")
+        elif value == 1:
+            self.result_image = ctk.CTkImage(light_image=self.neutral, size=(100, 100))
+            self.result_text.configure(text="The model predicted the \nreview to be neutral.")
+            self.result_text.grid_configure(row=0, column=0, padx=(90, 0), pady=(240, 0), sticky="nw")
+        elif value == 2:
+            self.result_image = ctk.CTkImage(light_image=self.happy, size=(100, 100))
+            self.result_text.configure(text="The model predicted the \nreview to be positive.")
+            self.result_text.grid_configure(row=0, column=0, padx=(90, 0), pady=(240, 0), sticky="nw")
+        else:
+            raise ValueError("Value must be 0, 1, or 2.")
+
+        self.result_image_show.configure(image=self.result_image)
 
     def update_upvotes_label(self, value):
         self.upvotes_value_label.configure(text=int(float(value)))
