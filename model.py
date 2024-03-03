@@ -8,7 +8,7 @@
 # - Define a function for the evaluation of the trained model
 # - Define a main function to execute the application
 
-print("\n\nLoading system...\n\n")
+print("\n\nLoading system...")
 
 import os
 import time
