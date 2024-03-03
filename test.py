@@ -156,7 +156,7 @@ class App(ctk.CTk):
     def __init__(self):
         super().__init__()
 
-        self.title("Sentiment Analysis Tool")
+        self.title("XGBERT")
         self.geometry("1440x810")
         self.resizable(False, False)
         self.grid_columnconfigure(0, weight=1)
