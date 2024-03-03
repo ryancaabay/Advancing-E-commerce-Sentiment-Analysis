@@ -14,7 +14,7 @@ class App(ctk.CTk):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure((0, 1), weight=1)
         
-        self.tab_view = MyTabView(master=self, width=1400, height=700)
+        self.tab_view = TabView(master=self, width=1400, height=700)
         self.tab_view.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
         
         self.appearance_mode = ctk.StringVar(value="on")
@@ -39,7 +39,7 @@ class App(ctk.CTk):
             #ctk.set_default_color_theme("green")
 
 
-class MyTabView(ctk.CTkTabview):
+class TabView(ctk.CTkTabview):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
 
