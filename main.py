@@ -1,8 +1,15 @@
+# This Python GUI application is designed to:
+# - Define an App class
+# - Define a TabView class
+
+print("\n\nLoading system...\n\n")
+
 import joblib
 import pandas as pd
 from PIL import Image
 import customtkinter as ctk
 from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
+
 
 class App(ctk.CTk):
     def __init__(self):
@@ -13,6 +20,9 @@ class App(ctk.CTk):
         self.resizable(False, False)
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure((0, 1), weight=1)
+
+        ctk.set_appearance_mode("dark")
+        ctk.set_default_color_theme("green")
         
         self.tab_view = TabView(master=self, width=1400, height=700)
         self.tab_view.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
@@ -233,8 +243,6 @@ def predict():
 
 
 if __name__ == "__main__":
-    print("\n\nLoading system...\n\n")
-    
     model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
     model = AutoModelForSequenceClassification.from_pretrained(model_name)
     tokenizer = AutoTokenizer.from_pretrained(model_name)
