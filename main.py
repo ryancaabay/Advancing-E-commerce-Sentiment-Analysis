@@ -249,6 +249,7 @@ class TabView(ctk.CTkTabview):
         current_option = self.figure_options.get()
 
         self.ax.clear()
+        self.visualization_canvas.get_tk_widget().delete("all")
 
         if current_option == "Feature Importance":
             plot_importance(current_system_model, ax=self.ax)
