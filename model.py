@@ -41,7 +41,7 @@ class Dataset:
         self.dataframe['review'] = self.dataframe['review'].apply(lambda x: normalize('NFKD', x).encode('ASCII', 'ignore').decode())
 
     def remove_special_characters(self):
-        self.dataframe['review'] = self.dataframe['review'].replace('[^A-Za-z0-9 ]+', '', regex=True)
+        self.dataframe['review'] = self.dataframe['review'].replace('[^A-Za-z0-9 !&-,.?]+', '', regex=True)
 
     def remove_white_space(self):
         self.dataframe['review'] = self.dataframe['review'].str.replace('\s+', ' ', regex=True)
