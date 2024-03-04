@@ -11,10 +11,13 @@
 print("\n\nLoading system...")
 
 import os
+import re
 import time
 import joblib
 import pandas as pd
+from textblob import TextBlob
 import matplotlib.pyplot as plt
+from unicodedata import normalize
 from xgboost import XGBClassifier, plot_importance
 from sklearn.model_selection import train_test_split, GridSearchCV, cross_val_score
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score 
@@ -34,10 +37,28 @@ class Dataset:
     def define_row_count(self, initial_row, final_row):  
         self.dataframe = self.dataframe.iloc[initial_row:final_row]
 
+    def remove_accented(self):
+        self.dataframe['review'] = self.dataframe['review'].apply(lambda x: normalize('NFKD', x).encode('ASCII', 'ignore').decode())
+
+    def remove_special_characters(self):
+        self.dataframe['review'] = self.dataframe['review'].replace('[^A-Za-z0-9 ]+', '', regex=True)
+
+    def remove_white_space(self):
+        self.dataframe['review'] = self.dataframe['review'].str.replace('\s+', ' ', regex=True)
+
+    def remove_html_tags(self):
+        self.dataframe['review'] = self.dataframe['review'].apply(lambda x: re.sub('<.*?>', '', x))
+    
+    def append_polarity(self):
+        self.dataframe['polarity'] = self.dataframe['review'].apply(lambda x: TextBlob(x).sentiment.polarity)
+
+    def append_subjectivity(self):
+        self.dataframe['subjectivity'] = self.dataframe['review'].apply(lambda x: TextBlob(x).sentiment.subjectivity)
+
     def save_csv(self, dataset_name):
         if not os.path.exists('dataset'):
             os.makedirs('dataset')
-        self.dataframe.to_csv(os.path.join('dataset', f'{dataset_name}.csv'))
+        self.dataframe.to_csv(os.path.join('dataset', f'{dataset_name}.csv'), index=False)
 
 
 class BERT:
@@ -79,7 +100,7 @@ class XGBoost:
         self.classifier.set_params(**self.best_params)
         self.classifier.fit(self.X_train, self.y_train)
 
-    def save_model(self, folder_name, model_name):
+    def save_model(self, model_name, folder_name):
         if not os.path.exists('model'):
             os.makedirs('model')
         if not os.path.exists(f'model/{folder_name}'):
@@ -110,6 +131,12 @@ def preprocess_dataset():
     df.drop_columns(columns_to_drop)
     df.rename_columns(columns_to_rename)
     df.define_row_count(initial_row, final_row)
+    df.remove_accented()
+    df.remove_special_characters()
+    df.remove_white_space()
+    df.remove_html_tags()
+    df.append_polarity()
+    df.append_subjectivity()
 
     return df
 
