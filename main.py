@@ -285,7 +285,7 @@ def plot_most_frequent(df, ax):
     frequency = pd.DataFrame(words_freq, columns=['word', 'freq'])
 
     plt.style.use('fivethirtyeight')
-    color = plt.cm.ocean(np.linspace(0, 1, 20))
+    color = plt.cm.ocean(np.linspace(0, 1, 21))
     frequency.head(20).plot(x='word', y='freq', kind='bar', color = color, ax=ax)
     plt.title("Most Frequently Occuring Words - Top 20")
 
