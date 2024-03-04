@@ -6,6 +6,7 @@ print("\n\nLoading system...\n\n")
 
 import joblib
 import numpy as np
+import contractions
 import pandas as pd
 from PIL import Image
 import customtkinter as ctk
@@ -274,6 +275,7 @@ class TabView(ctk.CTkTabview):
 
 
 def plot_most_frequent(df, ax):
+    df['review'] = df['review'].apply(lambda x: contractions.fix(x))
     cv = CountVectorizer(stop_words = 'english')
     words = cv.fit_transform(df['review'])
     sum_words = words.sum(axis=0)

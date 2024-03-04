@@ -36,6 +36,9 @@ class Dataset:
 
     def define_row_count(self, initial_row, final_row):  
         self.dataframe = self.dataframe.iloc[initial_row:final_row]
+    
+    def remove_html_tags(self):
+        self.dataframe['review'] = self.dataframe['review'].apply(lambda x: re.sub('<.*?>|<br />', '', x))
 
     def remove_accented(self):
         self.dataframe['review'] = self.dataframe['review'].apply(lambda x: normalize('NFKD', x).encode('ASCII', 'ignore').decode())
@@ -45,9 +48,6 @@ class Dataset:
 
     def remove_white_space(self):
         self.dataframe['review'] = self.dataframe['review'].str.replace('\s+', ' ', regex=True)
-
-    def remove_html_tags(self):
-        self.dataframe['review'] = self.dataframe['review'].apply(lambda x: re.sub('<.*?>', '', x))
     
     def append_polarity(self):
         self.dataframe['polarity'] = self.dataframe['review'].apply(lambda x: TextBlob(x).sentiment.polarity)
@@ -131,10 +131,10 @@ def preprocess_dataset():
     df.drop_columns(columns_to_drop)
     df.rename_columns(columns_to_rename)
     df.define_row_count(initial_row, final_row)
+    df.remove_html_tags()
     df.remove_accented()
     df.remove_special_characters()
     df.remove_white_space()
-    df.remove_html_tags()
     df.append_polarity()
     df.append_subjectivity()
 
