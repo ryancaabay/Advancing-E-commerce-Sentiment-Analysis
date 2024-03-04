@@ -8,7 +8,15 @@ import joblib
 import pandas as pd
 from PIL import Image
 import customtkinter as ctk
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from xgboost import plot_importance
 from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
+
+from sklearn.feature_extraction.text import CountVectorizer
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 class App(ctk.CTk):
@@ -66,7 +74,7 @@ class TabView(ctk.CTkTabview):
         self.tab("Sentiment Analyzer").grid_rowconfigure((0, 1), weight=1)
         
         self.sliders_frame = ctk.CTkFrame(master=self.tab("Sentiment Analyzer"), width=400, height=450, corner_radius=20, border_width=2, bg_color="transparent")
-        self.sliders_frame.grid(row=0, column=0, columnspan=3, padx=(60, 0), pady=(20, 0), sticky="nw")
+        self.sliders_frame.grid(row=0, column=0, columnspan=2, padx=(60, 0), pady=(20, 0), sticky="nw")
         self.sliders_frame.grid_propagate(False)
         self.sliders_frame.grid_columnconfigure((0, 1, 2), weight=1)
         self.sliders_frame.grid_rowconfigure((0, 1), weight=1)
@@ -195,12 +203,90 @@ class TabView(ctk.CTkTabview):
         self.rating_value_label.configure(text=int(float(value)))
 
     def create_data_visualization_tab(self):
-        self.label = ctk.CTkLabel(master=self.tab("Data Visualization"))
-        self.label.grid(row=0, column=0, padx=20, pady=10)
+        self.tab("Data Visualization").grid_columnconfigure((0, 1), weight=1)
+        self.tab("Data Visualization").grid_rowconfigure((0, 1), weight=1)
+
+        self.generation_frame = ctk.CTkFrame(master=self.tab("Data Visualization"), width=300, height=596, corner_radius=20, border_width=2, bg_color="transparent")
+        self.generation_frame.grid(row=0, column=0, columnspan=2, padx=(60, 0), pady=(20, 0), sticky="nw")
+        self.generation_frame.grid_propagate(False)
+        self.generation_frame.grid_columnconfigure(0, weight=1)
+        self.generation_frame.grid_rowconfigure((0, 1), weight=1)
+        self.generation_frame_label = ctk.CTkLabel(master=self.generation_frame, text="Settings", font=("Arial", 24))
+        self.generation_frame_label.grid(row=0, column=0, padx=(20, 0), pady=(20, 0), sticky="nw")
+
+        self.figure_options = ctk.CTkOptionMenu(master=self.generation_frame, width=200, corner_radius=5, values=["Feature Importance", "Polarity vs. Subjectivity", "Most Frequent Words", "Reaction on Keyword"])
+        self.figure_options.grid(row=0, column=0, padx=(50, 0), pady=(160, 0), sticky="nw")
+        self.figure_options_label = ctk.CTkLabel(master=self.generation_frame, text="Select figure type:", font=("Arial", 13), fg_color="transparent")
+        self.figure_options_label.grid(row=0, column=0, padx=(50, 0), pady=(130, 0), sticky="nw")
+
+        self.generate_button = ctk.CTkButton(master=self.generation_frame, width=150, height=40, corner_radius=15, text="Generate", font=("Arial", 18), anchor="center", command=self.generate_plot)
+        self.generate_button.grid(row=1, column=0, padx=(76, 0), pady=(0, 50), sticky="sw")
+
+        self.visualization_frame = ctk.CTkFrame(master=self.tab("Data Visualization"), width=920, height=596, corner_radius=20, border_width=2, bg_color="transparent")
+        self.visualization_frame.grid(row=0, column=0, columnspan=2, padx=(0, 60), pady=(20, 0), sticky="ne")
+        self.visualization_frame.grid_propagate(False)
+        self.visualization_frame.grid_columnconfigure(0, weight=1)
+        self.visualization_frame.grid_rowconfigure((0, 1), weight=1)
+        self.visualization_frame_label = ctk.CTkLabel(master=self.visualization_frame, text="Visualization Window", font=("Arial", 24))
+        self.visualization_frame_label.grid(row=0, column=0, padx=(0, 20), pady=(20, 0), sticky="ne")
+
+        self.visualization_canvas_frame = ctk.CTkFrame(master=self.visualization_frame, width=800, height=500, bg_color="transparent", fg_color="transparent")
+        self.visualization_canvas_frame.grid(row=1, column=0, padx=20, pady=20, sticky="nsew")
+        self.visualization_frame.grid_propagate(False)
+        self.visualization_frame.grid_columnconfigure(0, weight=1)
+        self.visualization_frame.grid_rowconfigure(0, weight=1)
+
+        
+        self.fig, self.ax = plt.subplots()
+        plot_importance(current_system_model, ax=self.ax)
+        self.visualization_canvas =  FigureCanvasTkAgg(self.fig, master=self.visualization_canvas_frame)
+        self.visualization_canvas.draw()
+        self.visualization_canvas_widget = self.visualization_canvas.get_tk_widget()
+        self.visualization_canvas_widget.config(width=880, height=500)
+        self.visualization_canvas_widget.grid(row=0, column=0, sticky="nsew")
+
+    def generate_plot(self):
+        current_option = self.figure_options.get()
+
+        self.ax.clear()
+
+        if current_option == "Feature Importance":
+            plot_importance(current_system_model, ax=self.ax)
+
+        elif current_option == "Polarity vs. Subjectivity":
+            pass
+
+        elif current_option == "Most Frequent Words":
+            plot_most_frequent(df, ax=self.ax)
+
+        elif current_option == "Reaction on Keyword":
+            pass
+
+        self.visualization_canvas =  FigureCanvasTkAgg(self.fig, master=self.visualization_canvas_frame)
+        self.visualization_canvas.draw()
+        self.visualization_canvas_widget = self.visualization_canvas.get_tk_widget()
+        self.visualization_canvas_widget.config(width=880, height=500)
+        self.visualization_canvas_widget.grid(row=0, column=0, sticky="nsew")
+
 
     def create_model_comparison_tab(self):
         self.label = ctk.CTkLabel(master=self.tab("Model Comparison"))
         self.label.grid(row=0, column=0, padx=20, pady=10)
+
+
+def plot_most_frequent(df, ax):
+    cv = CountVectorizer(stop_words = 'english')
+    words = cv.fit_transform(df['review'])
+    sum_words = words.sum(axis=0)
+
+    words_freq = [(word, sum_words[0, idx]) for word, idx in cv.vocabulary_.items()]
+    words_freq = sorted(words_freq, key = lambda x: x[1], reverse = True)
+    frequency = pd.DataFrame(words_freq, columns=['word', 'freq'])
+
+    plt.style.use('fivethirtyeight')
+    color = plt.cm.ocean(np.linspace(0, 1, 20))
+    frequency.head(20).plot(x='word', y='freq', kind='bar', color = color, ax=ax)
+    plt.title("Most Frequently Occuring Words - Top 20")
 
 
 def process_user_review():
@@ -243,10 +329,12 @@ def predict():
 
 
 if __name__ == "__main__":
+    df = pd.read_csv('dataset/reviews_preprocessed.csv')
+    '''
     model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
     model = AutoModelForSequenceClassification.from_pretrained(model_name)
     tokenizer = AutoTokenizer.from_pretrained(model_name)
-    classifier = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)
+    classifier = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)'''
     current_system_model = joblib.load('model/main/xgb_model.pkl')
 
     app = App()
