@@ -5,18 +5,16 @@
 print("\n\nLoading system...\n\n")
 
 import joblib
+import numpy as np
 import pandas as pd
 from PIL import Image
 import customtkinter as ctk
+from textblob import TextBlob
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from xgboost import plot_importance
-from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
-
 from sklearn.feature_extraction.text import CountVectorizer
-import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
+from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
 
 
 class App(ctk.CTk):
@@ -293,11 +291,14 @@ def plot_most_frequent(df, ax):
 def process_user_review():
     user_review_value = app.tab_view.user_review_textbox.get("0.0","end")
 
+    polarity = TextBlob(user_review_value).sentiment.polarity
+    subjectivity = TextBlob(user_review_value).sentiment.subjectivity
+    
     for result in classifier(user_review_value, truncation='longest_first', max_length=512):
         confidence = result['score']
         sentiment = result['label']
     
-    return sentiment, confidence
+    return polarity, subjectivity, sentiment, confidence
 
 
 def process_features():
@@ -309,16 +310,19 @@ def process_features():
 
 
 def predict():
-    sentiment, confidence = process_user_review()
+    polarity, subjectivity, sentiment, confidence = process_user_review()
     upvotes_value, total_votes_value, rating_value = process_features()
 
     data = pd.DataFrame({
                         'upvotes': [upvotes_value], 
                         'total_votes': [total_votes_value], 
                         'rating': [rating_value], 
+                        'polarity': [polarity],
+                        'subjectivity': [subjectivity],
                         'sentiment': [sentiment], 
                         'confidence': [confidence]
                         })
+    
     
     X = data.drop(columns=['sentiment'])
     y = data['sentiment']
@@ -331,12 +335,13 @@ def predict():
 
 if __name__ == "__main__":
     df = pd.read_csv('dataset/reviews_preprocessed.csv')
-    '''
+    #'''
     model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
     model = AutoModelForSequenceClassification.from_pretrained(model_name)
     tokenizer = AutoTokenizer.from_pretrained(model_name)
-    classifier = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)'''
-    current_system_model = joblib.load('model/main/xgb_model.pkl')
+    classifier = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)
+    #'''
+    current_system_model = joblib.load('model/main/xgbert.pkl')
 
     app = App()
     app.mainloop()
