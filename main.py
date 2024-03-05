@@ -10,6 +10,7 @@ import contractions
 import pandas as pd
 import seaborn as sns
 from PIL import Image
+from tkinter import ttk
 import customtkinter as ctk
 from textblob import TextBlob
 import matplotlib.pyplot as plt
@@ -238,13 +239,13 @@ class TabView(ctk.CTkTabview):
 
         self.visualization_canvas_frame = ctk.CTkFrame(master=self.visualization_frame, width=800, height=500, bg_color="transparent", fg_color="transparent")
         self.visualization_canvas_frame.grid(row=1, column=0, padx=20, pady=20, sticky="nsew")
-        self.visualization_frame.grid_propagate(False)
-        self.visualization_frame.grid_columnconfigure(0, weight=1)
-        self.visualization_frame.grid_rowconfigure(0, weight=1)
+        self.visualization_canvas_frame.grid_propagate(False)
+        self.visualization_canvas_frame.grid_columnconfigure(0, weight=1)
+        self.visualization_canvas_frame.grid_rowconfigure(0, weight=1)
 
         self.fig, self.ax = plt.subplots()
         plot_importance(current_system_model, ax=self.ax)
-        plt.tight_layout() 
+
         self.visualization_canvas =  FigureCanvasTkAgg(self.fig, master=self.visualization_canvas_frame)
         self.visualization_canvas.draw()
         self.visualization_canvas_widget = self.visualization_canvas.get_tk_widget()
@@ -269,11 +270,11 @@ class TabView(ctk.CTkTabview):
         elif current_option == "Most Frequent Words":
             self.fig, self.ax = plt.subplots()
             plot_most_frequent(df, ax=self.ax)
+            plt.tight_layout() 
 
         elif current_option == "Reaction on Keyword":
             pass
         
-        plt.tight_layout() 
         self.visualization_canvas =  FigureCanvasTkAgg(self.fig, master=self.visualization_canvas_frame)
         self.visualization_canvas.draw()
         self.visualization_canvas_widget = self.visualization_canvas.get_tk_widget()
@@ -290,16 +291,14 @@ class TabView(ctk.CTkTabview):
         self.configuration_frame.grid_propagate(False)
         self.configuration_frame.grid_columnconfigure(0, weight=1)
         self.configuration_frame.grid_rowconfigure((0, 1), weight=1)
-        self.configuration_frame_label = ctk.CTkLabel(master=self.configuration_frame, text="Settings", font=("Arial", 24))
+        self.configuration_frame_label = ctk.CTkLabel(master=self.configuration_frame, text="Search Filter", font=("Arial", 24))
         self.configuration_frame_label.grid(row=0, column=0, padx=(0, 20), pady=(20, 0), sticky="ne")
 
-        self.dataframe_options = ctk.CTkOptionMenu(master=self.configuration_frame, width=200, corner_radius=5, values=["Feature Importance", "Polarity vs. Subjectivity", "Most Frequent Words","Reaction on Keyword",])
-        self.dataframe_options.grid(row=0, column=0, padx=(50, 0), pady=(160, 0), sticky="nw")
-        self.dataframe_options_label = ctk.CTkLabel(master=self.configuration_frame, text="Select figure type:", font=("Arial", 13), fg_color="transparent")
-        self.dataframe_options_label.grid(row=0, column=0, padx=(50, 0), pady=(130, 0), sticky="nw")
-
-        self.generate_button = ctk.CTkButton(master=self.configuration_frame, width=150, height=40, corner_radius=15, text="Generate", font=("Arial", 18), anchor="center", command=self.generate_plot)
-        self.generate_button.grid(row=1, column=0, padx=(76, 0), pady=(0, 50), sticky="sw")
+        self.search_entry = ctk.CTkEntry(master=self.configuration_frame, width=200, corner_radius=5, font=("Arial", 13))
+        self.search_entry.grid(row=0, column=0, padx=(50, 0), pady=(160, 0), sticky="nw")
+        self.search_entry.bind('<KeyRelease>', self.perform_search)
+        self.search_entry_label = ctk.CTkLabel(master=self.configuration_frame, text="Filter data by keyword:", font=("Arial", 13), fg_color="transparent")
+        self.search_entry_label.grid(row=0, column=0, padx=(50, 0), pady=(130, 0), sticky="nw")
 
         self.dataset_frame = ctk.CTkFrame(master=self.tab("Model Comparison"), width=920, height=596, corner_radius=20, border_width=2, bg_color="transparent")
         self.dataset_frame.grid(row=0, column=0, columnspan=2, padx=(60, 0), pady=(20, 0), sticky="nw")
@@ -311,9 +310,45 @@ class TabView(ctk.CTkTabview):
 
         self.dataset_canvas_frame = ctk.CTkFrame(master=self.dataset_frame, width=800, height=500, bg_color="transparent", fg_color="transparent")
         self.dataset_canvas_frame.grid(row=1, column=0, padx=20, pady=20, sticky="nsew")
-        self.dataset_frame.grid_propagate(False)
-        self.dataset_frame.grid_columnconfigure(0, weight=1)
-        self.dataset_frame.grid_rowconfigure(0, weight=1)
+        self.dataset_canvas_frame.grid_propagate(False)
+        self.dataset_canvas_frame.grid_columnconfigure(0, weight=1)
+        self.dataset_canvas_frame.grid_rowconfigure(0, weight=1)
+
+        #self.retrieve_comparison = generate_model_comparison()
+        #self.comparison_dataframe = pd.read_csv(self.retrieve_comparison, nrows=100)   
+        self.comparison_dataframe = pd.read_csv('dataset/comparison.csv', nrows=100)
+        self.column_names = list(self.comparison_dataframe)  
+        self.result_tree_view = ttk.Treeview(master=self.dataset_canvas_frame, selectmode='browse')
+        self.result_tree_view.grid(row=0, column=0, sticky="nsew")
+        self.result_tree_view['show'] = 'headings'
+        self.result_tree_view['columns'] = self.column_names
+
+        for self.column_name in self.column_names:
+            self.result_tree_view.column(self.column_name, width=90, anchor='c')
+            self.result_tree_view.heading(self.column_name, text=self.column_name)
+
+        # Convert the DataFrame to a list of lists
+        self.data_list = self.comparison_dataframe.values.tolist()
+
+        # Insert the entire DataFrame into the Treeview
+        for index, row in self.comparison_dataframe.iterrows():
+            self.result_tree_view.insert("", 'end', iid=index, values=row.values)
+
+
+    def perform_search(self, event):
+        for all_rows in self.result_tree_view.get_children():
+            self.result_tree_view.delete(all_rows)
+
+        search_query = self.search_entry.get().strip().lower()
+        search_words = search_query.split(' ')
+
+        if all(word.isdigit() for word in search_words):
+            self.filtered_dataframe = self.comparison_dataframe[self.comparison_dataframe.apply(lambda row: all(word in row.astype(str).values for word in search_words), axis=1)]
+        else:
+            self.filtered_dataframe = self.comparison_dataframe[self.comparison_dataframe.apply(lambda row: all(any(word in str(value).lower() for value in row.values) for word in search_words), axis=1)]
+
+        for index, row in self.filtered_dataframe.iterrows():
+            self.result_tree_view.insert("", 'end', iid=index, values=row.values)
 
 
 def plot_polarity_subjectivity(df, ax1, ax2):
@@ -337,7 +372,7 @@ def plot_most_frequent(df, ax):
     frequency.head(20).plot(x='word', y='freq', kind='bar', color = color, ax=ax)
     plt.title("Most Frequently Occuring Words - Top 20")
 
-def plot_model_comparison():
+def generate_model_comparison():
     reviews = df['review'].copy() 
     sentiments = df['sentiment'].copy() 
     comparison_df = df.drop(['review', 'sentiment'], axis='columns')
@@ -348,6 +383,14 @@ def plot_model_comparison():
     comparison_df['review'] = reviews 
     comparison_df['sentiment'] = sentiments
     comparison_df['comparison_sentiment'] = comparison_y_pred
+
+    # Reset the index and rename the index column
+    comparison_df.reset_index(inplace=True)
+    comparison_df.rename(columns={'index': 'id'}, inplace=True)
+
+    comparison_df.to_csv('dataset/comparison.csv', index=False)
+
+    return 'dataset/comparison.csv'
 
 
 def process_user_review():
