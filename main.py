@@ -339,6 +339,8 @@ class TabView(ctk.CTkTabview):
 
 
     def filter_search(self, event):
+        self.result_tree_view.selection_remove(self.result_tree_view.selection())
+        
         for all_rows in self.result_tree_view.get_children():
             self.result_tree_view.delete(all_rows)
 
@@ -347,6 +349,7 @@ class TabView(ctk.CTkTabview):
 
         if all(word.isdigit() for word in search_words):
             self.filtered_dataframe = self.comparison_dataframe[self.comparison_dataframe.apply(lambda row: all(word in row.astype(str).values for word in search_words), axis=1)]
+
         else:
             self.filtered_dataframe = self.comparison_dataframe[self.comparison_dataframe.apply(lambda row: all(any(word in str(value).lower() for value in row.values) for word in search_words), axis=1)]
 
@@ -356,15 +359,20 @@ class TabView(ctk.CTkTabview):
     
 
     def display_review_text(self, event):
-        selected_item = self.result_tree_view.selection()[0]
-        item_values = self.result_tree_view.item(selected_item, 'values')
-        review_text_value = item_values[7]
+        selected_items = self.result_tree_view.selection()
 
-        self.review_text.configure(state="normal")
-        self.review_text.delete("1.0", "end")
+        if selected_items:  
+            selected_item = selected_items[0]
+            item_values = self.result_tree_view.item(selected_item, 'values')
 
-        self.review_text.insert("1.0", review_text_value)
-        self.review_text.configure(state="disabled")
+            if len(item_values) > 7:  
+                review_text_value = item_values[7]
+
+                self.review_text.configure(state="normal")
+                self.review_text.delete("1.0", "end")
+
+                self.review_text.insert("1.0", review_text_value)
+                self.review_text.configure(state="disabled")
 
 
 def plot_polarity_subjectivity(df, ax1, ax2):
