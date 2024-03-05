@@ -244,6 +244,7 @@ class TabView(ctk.CTkTabview):
 
         self.fig, self.ax = plt.subplots()
         plot_importance(current_system_model, ax=self.ax)
+        plt.tight_layout() 
         self.visualization_canvas =  FigureCanvasTkAgg(self.fig, master=self.visualization_canvas_frame)
         self.visualization_canvas.draw()
         self.visualization_canvas_widget = self.visualization_canvas.get_tk_widget()
@@ -271,7 +272,8 @@ class TabView(ctk.CTkTabview):
 
         elif current_option == "Reaction on Keyword":
             pass
-
+        
+        plt.tight_layout() 
         self.visualization_canvas =  FigureCanvasTkAgg(self.fig, master=self.visualization_canvas_frame)
         self.visualization_canvas.draw()
         self.visualization_canvas_widget = self.visualization_canvas.get_tk_widget()
@@ -289,7 +291,6 @@ def plot_polarity_subjectivity(df, ax1, ax2):
     sns.histplot(df['subjectivity'], ax=ax2)
 
     plt.suptitle('Distribution of Polarity and Subjectivity')
-    plt.tight_layout() 
 
     
 def plot_most_frequent(df, ax):
