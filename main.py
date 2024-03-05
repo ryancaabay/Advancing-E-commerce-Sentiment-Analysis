@@ -460,9 +460,10 @@ if __name__ == "__main__":
     classifier = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)
     current_system_model = joblib.load('model/main/xgbert.pkl')
 
+    app = App()
+
     print("\n\nSystem loaded successfully...")
 
-    app = App()
     app.mainloop()
 
     print("\n\nSystem exited...\n\n")
