@@ -101,7 +101,7 @@ class TabView(ctk.CTkTabview):
         self.rating_value_label = ctk.CTkLabel(master=self.sliders_frame, text="3", font=("Arial", 13))
         self.rating_value_label.grid(row=1, column=2, padx=(0, 6), pady=(0, 60), sticky="swe")
 
-        self.user_review_textbox = ctk.CTkTextbox(master=self.tab("Sentiment Analysis"), width=1200, height=100, corner_radius=20, border_width=2, fg_color="transparent", font=("Arial", 18))
+        self.user_review_textbox = ctk.CTkTextbox(master=self.tab("Sentiment Analysis"), width=1200, height=100, corner_radius=20, border_width=2, fg_color="transparent", font=("Arial", 18), wrap="word")
         self.user_review_textbox.grid(row=1, column=0, padx=(60, 0), pady=(20, 40), sticky="sw")
         self.user_review_textbox.insert("0.0", "Enter your review here...")
         self.user_review_textbox.bind("<FocusIn>", lambda event: self.user_review_textbox.delete("0.0", "end"))
@@ -282,19 +282,24 @@ class TabView(ctk.CTkTabview):
         self.tab("Model Comparison").grid_columnconfigure((0, 1), weight=1)
         self.tab("Model Comparison").grid_rowconfigure((0, 1), weight=1)
 
-        self.configuration_frame = ctk.CTkFrame(master=self.tab("Model Comparison"), width=300, height=596, corner_radius=20, border_width=2, bg_color="transparent")
-        self.configuration_frame.grid(row=0, column=0, columnspan=2, padx=(0, 60), pady=(20, 0), sticky="ne")
-        self.configuration_frame.grid_propagate(False)
-        self.configuration_frame.grid_columnconfigure(0, weight=1)
-        self.configuration_frame.grid_rowconfigure((0, 1), weight=1)
-        self.configuration_frame_label = ctk.CTkLabel(master=self.configuration_frame, text="Search Filter", font=("Arial", 24))
-        self.configuration_frame_label.grid(row=0, column=0, padx=(0, 20), pady=(20, 0), sticky="ne")
+        self.search_filter_frame = ctk.CTkFrame(master=self.tab("Model Comparison"), width=300, height=596, corner_radius=20, border_width=2, bg_color="transparent")
+        self.search_filter_frame.grid(row=0, column=0, columnspan=2, padx=(0, 60), pady=(20, 0), sticky="ne")
+        self.search_filter_frame.grid_propagate(False)
+        self.search_filter_frame.grid_columnconfigure(0, weight=1)
+        self.search_filter_frame.grid_rowconfigure((0, 1), weight=1)
+        self.search_filter_frame_label = ctk.CTkLabel(master=self.search_filter_frame, text="Search Filter", font=("Arial", 24))
+        self.search_filter_frame_label.grid(row=0, column=0, padx=(0, 20), pady=(20, 0), sticky="ne")
 
-        self.search_entry = ctk.CTkEntry(master=self.configuration_frame, width=200, corner_radius=5, font=("Arial", 13))
+        self.search_entry = ctk.CTkEntry(master=self.search_filter_frame, width=200, corner_radius=5, font=("Arial", 13))
         self.search_entry.grid(row=0, column=0, padx=(50, 0), pady=(160, 0), sticky="nw")
-        self.search_entry.bind('<KeyRelease>', self.perform_search)
-        self.search_entry_label = ctk.CTkLabel(master=self.configuration_frame, text="Filter data by keyword:", font=("Arial", 13), fg_color="transparent")
+        self.search_entry.bind('<KeyRelease>', self.filter_search)
+        self.search_entry_label = ctk.CTkLabel(master=self.search_filter_frame, text="Filter data by keyword:", font=("Arial", 13), fg_color="transparent")
         self.search_entry_label.grid(row=0, column=0, padx=(50, 0), pady=(130, 0), sticky="nw")
+
+        self.review_text = ctk.CTkTextbox(master=self.search_filter_frame, width=200, height=300, corner_radius=5, border_width=2, fg_color="transparent", font=("Arial", 18), wrap="word")
+        self.review_text.grid(row=0, column=0, padx=(50, 0), pady=(220, 0), sticky="nw")
+        self.review_text.insert("1.0", "Review text of selected row goes here...")
+        self.review_text.configure(state="disabled")
 
         self.dataset_frame = ctk.CTkFrame(master=self.tab("Model Comparison"), width=920, height=596, corner_radius=20, border_width=2, bg_color="transparent")
         self.dataset_frame.grid(row=0, column=0, columnspan=2, padx=(60, 0), pady=(20, 0), sticky="nw")
@@ -310,9 +315,8 @@ class TabView(ctk.CTkTabview):
         self.dataset_canvas_frame.grid_columnconfigure(0, weight=1)
         self.dataset_canvas_frame.grid_rowconfigure(0, weight=1)
 
-        #self.retrieve_comparison = generate_model_comparison()
-        #self.comparison_dataframe = pd.read_csv(self.retrieve_comparison, nrows=100)   
-        self.comparison_dataframe = pd.read_csv('dataset/comparison.csv', nrows=100)
+        #generate_model_comparison()
+        self.comparison_dataframe = pd.read_csv('dataset/model_comparison.csv')
         self.column_names = list(self.comparison_dataframe)  
         self.result_tree_view = ttk.Treeview(master=self.dataset_canvas_frame, selectmode='browse')
         self.result_tree_view.grid(row=0, column=0, sticky="nsew")
@@ -320,18 +324,21 @@ class TabView(ctk.CTkTabview):
         self.result_tree_view['columns'] = self.column_names
 
         for self.column_name in self.column_names:
-            self.result_tree_view.column(self.column_name, width=90, anchor='c')
+            self.result_tree_view.column(self.column_name, width=80, anchor='c')
             self.result_tree_view.heading(self.column_name, text=self.column_name)
 
-        # Convert the DataFrame to a list of lists
         self.data_list = self.comparison_dataframe.values.tolist()
 
-        # Insert the entire DataFrame into the Treeview
         for index, row in self.comparison_dataframe.iterrows():
-            self.result_tree_view.insert("", 'end', iid=index, values=row.values)
+            index = str(index)
+            row.iloc[-1] = str(row.iloc[-1])
+            values = list(row.values)
+            self.result_tree_view.insert("", 'end', iid=index, values=values)
+        
+        self.result_tree_view.bind('<<TreeviewSelect>>', self.display_review_text)
 
 
-    def perform_search(self, event):
+    def filter_search(self, event):
         for all_rows in self.result_tree_view.get_children():
             self.result_tree_view.delete(all_rows)
 
@@ -344,7 +351,20 @@ class TabView(ctk.CTkTabview):
             self.filtered_dataframe = self.comparison_dataframe[self.comparison_dataframe.apply(lambda row: all(any(word in str(value).lower() for value in row.values) for word in search_words), axis=1)]
 
         for index, row in self.filtered_dataframe.iterrows():
-            self.result_tree_view.insert("", 'end', iid=index, values=row.values)
+            values = list(row.values)
+            self.result_tree_view.insert("", 'end', values=values)
+    
+
+    def display_review_text(self, event):
+        selected_item = self.result_tree_view.selection()[0]
+        item_values = self.result_tree_view.item(selected_item, 'values')
+        review_text_value = item_values[7]
+
+        self.review_text.configure(state="normal")
+        self.review_text.delete("1.0", "end")
+
+        self.review_text.insert("1.0", review_text_value)
+        self.review_text.configure(state="disabled")
 
 
 def plot_polarity_subjectivity(df, ax1, ax2):
@@ -368,6 +388,7 @@ def plot_most_frequent(df, ax):
     frequency.head(20).plot(x='word', y='freq', kind='bar', color = color, ax=ax)
     plt.title("Most Frequently Occuring Words - Top 20")
 
+
 def generate_model_comparison():
     reviews = df['review'].copy() 
     sentiments = df['sentiment'].copy() 
@@ -378,15 +399,12 @@ def generate_model_comparison():
     
     comparison_df['review'] = reviews 
     comparison_df['sentiment'] = sentiments
-    comparison_df['comparison_sentiment'] = comparison_y_pred
+    comparison_df['xgbert'] = comparison_y_pred
 
-    # Reset the index and rename the index column
     comparison_df.reset_index(inplace=True)
     comparison_df.rename(columns={'index': 'id'}, inplace=True)
 
-    comparison_df.to_csv('dataset/comparison.csv', index=False)
-
-    return 'dataset/comparison.csv'
+    comparison_df.to_csv('dataset/model_comparison.csv', index=False)
 
 
 def process_user_review():
