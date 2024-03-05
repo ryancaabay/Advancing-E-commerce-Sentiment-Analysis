@@ -307,6 +307,18 @@ def plot_most_frequent(df, ax):
     frequency.head(20).plot(x='word', y='freq', kind='bar', color = color, ax=ax)
     plt.title("Most Frequently Occuring Words - Top 20")
 
+def plot_model_comparison():
+    reviews = df['review'].copy() 
+    sentiments = df['sentiment'].copy() 
+    comparison_df = df.drop(['review', 'sentiment'], axis='columns')
+
+    comparison_X = comparison_df
+    comparison_y_pred = current_system_model.predict(comparison_X)
+    
+    comparison_df['review'] = reviews 
+    comparison_df['sentiment'] = sentiments
+    comparison_df['comparison_sentiment'] = comparison_y_pred
+
 
 def process_user_review():
     user_review_value = app.tab_view.user_review_textbox.get("0.0","end")
@@ -354,7 +366,7 @@ def predict():
 
 
 if __name__ == "__main__":
-    df = pd.read_csv('dataset/reviews_preprocessed.csv')
+    df = pd.read_csv('dataset/reviews_preprocessed.csv', index_col=False)
 
     #'''
     model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
