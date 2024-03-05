@@ -366,7 +366,7 @@ def predict():
 
 
 if __name__ == "__main__":
-    df = pd.read_csv('dataset/reviews_preprocessed.csv', index_col=False)
+    df = pd.read_csv('dataset/reviews_preprocessed.csv')
 
     #'''
     model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
