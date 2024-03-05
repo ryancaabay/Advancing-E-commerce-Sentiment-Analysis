@@ -1,13 +1,3 @@
-# This Python console application is designed to:
-# - Define a Dataset class for handling datasets and preprocessing techniques
-# - Define a BERT class for handling model customization and embedding generation
-# - Define an XGBoost class for handling model customization, implementation, and evaluation
-# - Define a function for the preprocessing of dataset
-# - Define a function for the generation of BERT embeddings
-# - Define a function for the training of an XGBoost model
-# - Define a function for the evaluation of the trained model
-# - Define a main function to execute the application
-
 print("\n\nLoading system...")
 
 import os

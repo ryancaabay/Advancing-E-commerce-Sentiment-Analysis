@@ -1,7 +1,3 @@
-# This Python GUI application is designed to:
-# - Define an App class
-# - Define a TabView class
-
 print("\n\nLoading system...\n\n")
 
 import joblib
@@ -440,13 +436,10 @@ def predict():
 
 if __name__ == "__main__":
     df = pd.read_csv('dataset/reviews_preprocessed.csv')
-
-    #'''
     model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
     model = AutoModelForSequenceClassification.from_pretrained(model_name)
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     classifier = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)
-    #'''
     current_system_model = joblib.load('model/main/xgbert.pkl')
 
     print("\n\nSystem loaded successfully...")
@@ -455,4 +448,3 @@ if __name__ == "__main__":
     app.mainloop()
 
     print("\n\nSystem exited...\n\n")
-
