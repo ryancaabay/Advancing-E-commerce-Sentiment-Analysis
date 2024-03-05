@@ -285,6 +285,36 @@ class TabView(ctk.CTkTabview):
         self.tab("Model Comparison").grid_columnconfigure((0, 1), weight=1)
         self.tab("Model Comparison").grid_rowconfigure((0, 1), weight=1)
 
+        self.configuration_frame = ctk.CTkFrame(master=self.tab("Model Comparison"), width=300, height=596, corner_radius=20, border_width=2, bg_color="transparent")
+        self.configuration_frame.grid(row=0, column=0, columnspan=2, padx=(0, 60), pady=(20, 0), sticky="ne")
+        self.configuration_frame.grid_propagate(False)
+        self.configuration_frame.grid_columnconfigure(0, weight=1)
+        self.configuration_frame.grid_rowconfigure((0, 1), weight=1)
+        self.configuration_frame_label = ctk.CTkLabel(master=self.configuration_frame, text="Settings", font=("Arial", 24))
+        self.configuration_frame_label.grid(row=0, column=0, padx=(0, 20), pady=(20, 0), sticky="ne")
+
+        self.dataframe_options = ctk.CTkOptionMenu(master=self.configuration_frame, width=200, corner_radius=5, values=["Feature Importance", "Polarity vs. Subjectivity", "Most Frequent Words","Reaction on Keyword",])
+        self.dataframe_options.grid(row=0, column=0, padx=(50, 0), pady=(160, 0), sticky="nw")
+        self.dataframe_options_label = ctk.CTkLabel(master=self.configuration_frame, text="Select figure type:", font=("Arial", 13), fg_color="transparent")
+        self.dataframe_options_label.grid(row=0, column=0, padx=(50, 0), pady=(130, 0), sticky="nw")
+
+        self.generate_button = ctk.CTkButton(master=self.configuration_frame, width=150, height=40, corner_radius=15, text="Generate", font=("Arial", 18), anchor="center", command=self.generate_plot)
+        self.generate_button.grid(row=1, column=0, padx=(76, 0), pady=(0, 50), sticky="sw")
+
+        self.dataset_frame = ctk.CTkFrame(master=self.tab("Model Comparison"), width=920, height=596, corner_radius=20, border_width=2, bg_color="transparent")
+        self.dataset_frame.grid(row=0, column=0, columnspan=2, padx=(60, 0), pady=(20, 0), sticky="nw")
+        self.dataset_frame.grid_propagate(False)
+        self.dataset_frame.grid_columnconfigure(0, weight=1)
+        self.dataset_frame.grid_rowconfigure((0, 1), weight=1)
+        self.dataset_frame_label = ctk.CTkLabel(master=self.dataset_frame, text="Dataframe Window", font=("Arial", 24))
+        self.dataset_frame_label.grid(row=0, column=0, padx=(20, 0), pady=(20, 0), sticky="nw")
+
+        self.dataset_canvas_frame = ctk.CTkFrame(master=self.dataset_frame, width=800, height=500, bg_color="transparent", fg_color="transparent")
+        self.dataset_canvas_frame.grid(row=1, column=0, padx=20, pady=20, sticky="nsew")
+        self.dataset_frame.grid_propagate(False)
+        self.dataset_frame.grid_columnconfigure(0, weight=1)
+        self.dataset_frame.grid_rowconfigure(0, weight=1)
+
 
 def plot_polarity_subjectivity(df, ax1, ax2):
     sns.histplot(df['polarity'], ax=ax1)
