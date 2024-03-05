@@ -28,32 +28,42 @@ class Dataset:
     def __init__(self, dataframe):
         self.dataframe = dataframe
 
+
     def drop_columns(self, columns_to_drop):
         self.dataframe = self.dataframe.drop(columns = columns_to_drop)
+
 
     def rename_columns(self, columns_to_rename):
         self.dataframe = self.dataframe.rename(columns = columns_to_rename)
 
+
     def define_row_count(self, initial_row, final_row):  
         self.dataframe = self.dataframe.iloc[initial_row:final_row]
     
+
     def remove_html_tags(self):
         self.dataframe['review'] = self.dataframe['review'].apply(lambda x: re.sub('<.*?>|<br />', '', x))
+
 
     def remove_accented(self):
         self.dataframe['review'] = self.dataframe['review'].apply(lambda x: normalize('NFKD', x).encode('ASCII', 'ignore').decode())
 
+
     def remove_special_characters(self):
         self.dataframe['review'] = self.dataframe['review'].replace('[^A-Za-z0-9 !&-,.?]+', '', regex=True)
+
 
     def remove_white_space(self):
         self.dataframe['review'] = self.dataframe['review'].str.replace('\s+', ' ', regex=True)
     
+
     def append_polarity(self):
         self.dataframe['polarity'] = self.dataframe['review'].apply(lambda x: TextBlob(x).sentiment.polarity)
 
+
     def append_subjectivity(self):
         self.dataframe['subjectivity'] = self.dataframe['review'].apply(lambda x: TextBlob(x).sentiment.subjectivity)
+
 
     def save_csv(self, dataset_name):
         if not os.path.exists('dataset'):
@@ -66,6 +76,7 @@ class BERT:
         self.model = AutoModelForSequenceClassification.from_pretrained(model_name)
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.classifier = pipeline("sentiment-analysis", model=self.model, tokenizer=self.tokenizer)
+
 
     def append_bert_embeddings(self, dataframe, sentiment_mapping):
         sentiment = []
@@ -84,21 +95,26 @@ class XGBoost:
         self.classifier = classifier
         self.best_params = None
 
+
     def split_data(self, X, y):
         self.X = X
         self.y = y
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=.2)
 
+
     def search_best_params(self, grid_search):
         grid_search.fit(self.X_train, self.y_train)
         self.best_params = grid_search.best_params_
 
+
     def set_best_params(self, best_params):
         self.best_params = best_params
+
 
     def classify_sentiment(self):
         self.classifier.set_params(**self.best_params)
         self.classifier.fit(self.X_train, self.y_train)
+
 
     def save_model(self, model_name, folder_name):
         if not os.path.exists('model'):
@@ -173,14 +189,14 @@ def train_xgboost_model():
              } 
     
     params_preset = {
-                "colsample_bytree": 0.5, 
-                "gamma": 0.4, 
-                "learning_rate": 0.05, 
-                "max_depth": 4, 
-                "min_child_weight": 7, 
-                "objective": 'multi:softmax',
-                "subsample": 0.8
-             }
+                        "colsample_bytree": 0.5, 
+                        "gamma": 0.4, 
+                        "learning_rate": 0.05, 
+                        "max_depth": 4, 
+                        "min_child_weight": 7, 
+                        "objective": 'multi:softmax',
+                        "subsample": 0.8
+                    }
     
     xgb_model = XGBClassifier()
     grid_search = GridSearchCV(xgb_model, param_grid = params, refit=True, scoring='roc_auc_ovr', n_jobs=-1, cv=5, verbose=3)

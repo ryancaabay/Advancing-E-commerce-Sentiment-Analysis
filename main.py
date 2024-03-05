@@ -8,6 +8,7 @@ import joblib
 import numpy as np
 import contractions
 import pandas as pd
+import seaborn as sns
 from PIL import Image
 import customtkinter as ctk
 from textblob import TextBlob
@@ -46,6 +47,7 @@ class App(ctk.CTk):
         y = height/2 - size[1]/2
         self.geometry("%dx%d+%d+%d" % (size + (x, y)))
 
+
     def appearance(self):
         if self.appearance_mode.get() == "on":
             ctk.set_appearance_mode("dark")
@@ -67,6 +69,7 @@ class TabView(ctk.CTkTabview):
         self.create_sentiment_analyzer_tab()
         self.create_data_visualization_tab()
         self.create_model_comparison_tab()
+
 
     def create_sentiment_analyzer_tab(self):
         self.tab("Sentiment Analyzer").grid_columnconfigure((0, 1), weight=1)
@@ -192,14 +195,18 @@ class TabView(ctk.CTkTabview):
 
         self.result_image_show.configure(image=self.result_image)
 
+
     def update_upvotes_label(self, value):
         self.upvotes_value_label.configure(text=int(float(value)))
     
+
     def update_total_votes_label(self, value):
         self.total_votes_value_label.configure(text=int(float(value)))
 
+
     def update_rating_label(self, value):
         self.rating_value_label.configure(text=int(float(value)))
+
 
     def create_data_visualization_tab(self):
         self.tab("Data Visualization").grid_columnconfigure((0, 1), weight=1)
@@ -235,7 +242,6 @@ class TabView(ctk.CTkTabview):
         self.visualization_frame.grid_columnconfigure(0, weight=1)
         self.visualization_frame.grid_rowconfigure(0, weight=1)
 
-        
         self.fig, self.ax = plt.subplots()
         plot_importance(current_system_model, ax=self.ax)
         self.visualization_canvas =  FigureCanvasTkAgg(self.fig, master=self.visualization_canvas_frame)
@@ -244,6 +250,7 @@ class TabView(ctk.CTkTabview):
         self.visualization_canvas_widget.config(width=880, height=500)
         self.visualization_canvas_widget.grid(row=0, column=0, sticky="nsew")
 
+
     def generate_plot(self):
         current_option = self.figure_options.get()
 
@@ -251,12 +258,15 @@ class TabView(ctk.CTkTabview):
         self.visualization_canvas.get_tk_widget().delete("all")
 
         if current_option == "Feature Importance":
+            self.fig, self.ax = plt.subplots()
             plot_importance(current_system_model, ax=self.ax)
 
         elif current_option == "Polarity vs. Subjectivity":
-            pass
+            self.fig, (self.ax1, self.ax2) = plt.subplots(1, 2)
+            plot_polarity_subjectivity(df, ax1=self.ax1, ax2=self.ax2)
 
         elif current_option == "Most Frequent Words":
+            self.fig, self.ax = plt.subplots()
             plot_most_frequent(df, ax=self.ax)
 
         elif current_option == "Reaction on Keyword":
@@ -270,10 +280,18 @@ class TabView(ctk.CTkTabview):
 
 
     def create_model_comparison_tab(self):
-        self.label = ctk.CTkLabel(master=self.tab("Model Comparison"))
-        self.label.grid(row=0, column=0, padx=20, pady=10)
+        self.tab("Model Comparison").grid_columnconfigure((0, 1), weight=1)
+        self.tab("Model Comparison").grid_rowconfigure((0, 1), weight=1)
 
 
+def plot_polarity_subjectivity(df, ax1, ax2):
+    sns.histplot(df['polarity'], ax=ax1)
+    sns.histplot(df['subjectivity'], ax=ax2)
+
+    plt.suptitle('Distribution of Polarity and Subjectivity')
+    plt.tight_layout() 
+
+    
 def plot_most_frequent(df, ax):
     df['review'] = df['review'].apply(lambda x: contractions.fix(x))
     cv = CountVectorizer(stop_words = 'english')
@@ -284,7 +302,6 @@ def plot_most_frequent(df, ax):
     words_freq = sorted(words_freq, key = lambda x: x[1], reverse = True)
     frequency = pd.DataFrame(words_freq, columns=['word', 'freq'])
 
-    plt.style.use('fivethirtyeight')
     color = plt.cm.ocean(np.linspace(0, 1, 21))
     frequency.head(20).plot(x='word', y='freq', kind='bar', color = color, ax=ax)
     plt.title("Most Frequently Occuring Words - Top 20")
@@ -337,6 +354,7 @@ def predict():
 
 if __name__ == "__main__":
     df = pd.read_csv('dataset/reviews_preprocessed.csv')
+
     #'''
     model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
     model = AutoModelForSequenceClassification.from_pretrained(model_name)
@@ -344,6 +362,8 @@ if __name__ == "__main__":
     classifier = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)
     #'''
     current_system_model = joblib.load('model/main/xgbert.pkl')
+
+    print("\n\nSystem loaded successfully...")
 
     app = App()
     app.mainloop()
