@@ -62,20 +62,20 @@ class TabView(ctk.CTkTabview):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
 
-        self.add("Sentiment Analyzer")  
+        self.add("Sentiment Analysis")  
         self.add("Data Visualization")
         self.add("Model Comparison")  
 
-        self.create_sentiment_analyzer_tab()
+        self.create_sentiment_analysis_tab()
         self.create_data_visualization_tab()
         self.create_model_comparison_tab()
 
 
-    def create_sentiment_analyzer_tab(self):
-        self.tab("Sentiment Analyzer").grid_columnconfigure((0, 1), weight=1)
-        self.tab("Sentiment Analyzer").grid_rowconfigure((0, 1), weight=1)
+    def create_sentiment_analysis_tab(self):
+        self.tab("Sentiment Analysis").grid_columnconfigure((0, 1), weight=1)
+        self.tab("Sentiment Analysis").grid_rowconfigure((0, 1), weight=1)
         
-        self.sliders_frame = ctk.CTkFrame(master=self.tab("Sentiment Analyzer"), width=400, height=450, corner_radius=20, border_width=2, bg_color="transparent")
+        self.sliders_frame = ctk.CTkFrame(master=self.tab("Sentiment Analysis"), width=400, height=450, corner_radius=20, border_width=2, bg_color="transparent")
         self.sliders_frame.grid(row=0, column=0, columnspan=2, padx=(60, 0), pady=(20, 0), sticky="nw")
         self.sliders_frame.grid_propagate(False)
         self.sliders_frame.grid_columnconfigure((0, 1, 2), weight=1)
@@ -104,15 +104,15 @@ class TabView(ctk.CTkTabview):
         self.rating_value_label = ctk.CTkLabel(master=self.sliders_frame, text="3", font=("Arial", 13))
         self.rating_value_label.grid(row=1, column=2, padx=(0, 6), pady=(0, 60), sticky="swe")
 
-        self.user_review_textbox = ctk.CTkTextbox(master=self.tab("Sentiment Analyzer"), width=1200, height=100, corner_radius=20, border_width=2, fg_color="transparent", font=("Arial", 18))
+        self.user_review_textbox = ctk.CTkTextbox(master=self.tab("Sentiment Analysis"), width=1200, height=100, corner_radius=20, border_width=2, fg_color="transparent", font=("Arial", 18))
         self.user_review_textbox.grid(row=1, column=0, padx=(60, 0), pady=(20, 40), sticky="sw")
         self.user_review_textbox.insert("0.0", "Enter your review here...")
         self.user_review_textbox.bind("<FocusIn>", lambda event: self.user_review_textbox.delete("0.0", "end"))
 
-        self.predict_button = ctk.CTkButton(master=self.tab("Sentiment Analyzer"), width=50, height=50, corner_radius=15, border_width=0, text="↑", font=("Arial", 24), anchor="center", command=predict)
+        self.predict_button = ctk.CTkButton(master=self.tab("Sentiment Analysis"), width=50, height=50, corner_radius=15, border_width=0, text="↑", font=("Arial", 24), anchor="center", command=predict)
         self.predict_button.grid(row=1, column=1, padx=(0, 60), pady=(0, 65), sticky="se")
 
-        self.results_frame = ctk.CTkFrame(master=self.tab("Sentiment Analyzer"), width=820, height=450, corner_radius=20, border_width=2, bg_color="transparent")
+        self.results_frame = ctk.CTkFrame(master=self.tab("Sentiment Analysis"), width=820, height=450, corner_radius=20, border_width=2, bg_color="transparent")
         self.results_frame.grid(row=0, column=0, columnspan=2, padx=(0, 60), pady=(20, 0), sticky="ne")
         self.results_frame.grid_propagate(False)
         self.results_frame.grid_columnconfigure((0, 1), weight=1)
