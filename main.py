@@ -214,13 +214,13 @@ class TabView(ctk.CTkTabview):
         self.generation_frame.grid_propagate(False)
         self.generation_frame.grid_columnconfigure(0, weight=1)
         self.generation_frame.grid_rowconfigure((0, 1), weight=1)
-        self.generation_frame_label = ctk.CTkLabel(master=self.generation_frame, text="Settings", font=("Arial", 24))
+        self.generation_frame_label = ctk.CTkLabel(master=self.generation_frame, text="Plot Type", font=("Arial", 24))
         self.generation_frame_label.grid(row=0, column=0, padx=(20, 0), pady=(20, 0), sticky="nw")
 
-        self.figure_options = ctk.CTkOptionMenu(master=self.generation_frame, width=200, corner_radius=5, values=["Feature Importance", "Polarity vs. Subjectivity", "Most Frequent Words", "Reaction on Keyword"])
-        self.figure_options.grid(row=0, column=0, padx=(50, 0), pady=(160, 0), sticky="nw")
-        self.figure_options_label = ctk.CTkLabel(master=self.generation_frame, text="Select figure type:", font=("Arial", 13), fg_color="transparent")
-        self.figure_options_label.grid(row=0, column=0, padx=(50, 0), pady=(130, 0), sticky="nw")
+        self.plot_options = ctk.CTkOptionMenu(master=self.generation_frame, width=200, corner_radius=5, values=["Feature Importance", "Polarity vs. Subjectivity", "Most Frequent Words", "Reaction on Keyword"])
+        self.plot_options.grid(row=0, column=0, padx=(50, 0), pady=(160, 0), sticky="nw")
+        self.plot_options_label = ctk.CTkLabel(master=self.generation_frame, text="Select visualization option:", font=("Arial", 13), fg_color="transparent")
+        self.plot_options_label.grid(row=0, column=0, padx=(50, 0), pady=(130, 0), sticky="nw")
 
         self.generate_button = ctk.CTkButton(master=self.generation_frame, width=150, height=40, corner_radius=15, text="Generate", font=("Arial", 18), anchor="center", command=self.generate_plot)
         self.generate_button.grid(row=1, column=0, padx=(76, 0), pady=(0, 50), sticky="sw")
@@ -250,10 +250,10 @@ class TabView(ctk.CTkTabview):
 
 
     def generate_plot(self):
-        current_option = self.figure_options.get()
+        current_option = self.plot_options.get()
 
         self.ax.clear()
-        self.visualization_canvas.get_tk_widget().delete("all")
+        self.fig.clf()
 
         if current_option == "Feature Importance":
             self.fig, self.ax = plt.subplots()
@@ -340,7 +340,7 @@ class TabView(ctk.CTkTabview):
 
     def filter_search(self, event):
         self.result_tree_view.selection_remove(self.result_tree_view.selection())
-        
+
         for all_rows in self.result_tree_view.get_children():
             self.result_tree_view.delete(all_rows)
 
