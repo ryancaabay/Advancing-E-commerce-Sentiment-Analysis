@@ -10,9 +10,9 @@ from tkinter import ttk
 import customtkinter as ctk
 from textblob import TextBlob
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from xgboost import plot_importance
 from sklearn.feature_extraction.text import CountVectorizer
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
 
 
@@ -242,7 +242,7 @@ class TabView(ctk.CTkTabview):
         self.fig, self.ax = plt.subplots()
         plot_importance(current_system_model, ax=self.ax)
 
-        self.visualization_canvas =  FigureCanvasTkAgg(self.fig, master=self.visualization_canvas_frame)
+        self.visualization_canvas = FigureCanvasTkAgg(self.fig, master=self.visualization_canvas_frame)
         self.visualization_canvas.draw()
         self.visualization_canvas_widget = self.visualization_canvas.get_tk_widget()
         self.visualization_canvas_widget.config(width=880, height=500)
