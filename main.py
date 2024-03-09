@@ -272,8 +272,8 @@ class TabView(ctk.CTkTabview):
             plt.tight_layout() 
 
         elif current_option == "Reaction on Keyword":
-            self.dialog = ctk.CTkInputDialog(text="Type in a keyword:", title="Keyword Input")
-            self.keyword = self.dialog.get_input()
+            self.keyword_input = ctk.CTkInputDialog(text="Type in desired keyword/s:", title="Keyword Input Dialog")
+            self.keyword = self.keyword_input.get_input()
             self.fig, self.ax = plt.subplots()
             plot_reaction_on_keyword(df, self.keyword, ax=self.ax)
             plt.tight_layout()
