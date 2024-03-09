@@ -276,6 +276,7 @@ class TabView(ctk.CTkTabview):
             self.keyword = self.dialog.get_input()
             self.fig, self.ax = plt.subplots()
             plot_reaction_on_keyword(df, self.keyword, ax=self.ax)
+            plt.tight_layout()
         
         self.visualization_canvas =  FigureCanvasTkAgg(self.fig, master=self.visualization_canvas_frame)
         self.visualization_canvas.draw()
@@ -401,7 +402,8 @@ def plot_most_frequent(df, ax):
     color = plt.cm.ocean(np.linspace(0, 1, 21))
     frequency.head(20).plot(x='word', y='freq', kind='bar', color = color, ax=ax)
     plt.title("Most Frequently Occuring Words - Top 20")
-                                         
+
+                
 def plot_reaction_on_keyword(df, keyword, ax):
     df = mc.copy()
 
@@ -415,9 +417,9 @@ def plot_reaction_on_keyword(df, keyword, ax):
 
     df['xgbert'] = df['xgbert'].apply(get_xgbert_value)
 
-    searched_term = keyword
+    searched_term = keyword.lower()
 
-    df = df[df['review'].str.contains(searched_term, na=False)]
+    df = df[df['review'].str.lower().str.contains(searched_term, na=False)]
 
     negative = len(df[df['xgbert'] == 'Negative'])
     neutral = len(df[df['xgbert'] == 'Neutral'])
@@ -441,11 +443,13 @@ def plot_reaction_on_keyword(df, keyword, ax):
 
     sizes = [positive, neutral, negative]
     colors = ['yellowgreen', 'gold', 'red']
-    labels = ['Positive [' + str(positive) + '%]', 'Neutral [' + str(neutral) + '%]', 'Negative [' + str(negative) + '%]']
+    sentiments = ['Positive', 'Neutral', 'Negative']
+    percents = [str(positive) + '%', str(neutral) + '%', str(negative) + '%']
+    #labels = ['Positive (' + str(positive) + '%)', 'Neutral (' + str(neutral) + '%)', 'Negative (' + str(negative) + '%)']
 
-    ax.pie(sizes, labels = labels, colors = colors)
-    ax.legend(labels, loc="best")
-    ax.set_title('\'' + searched_term + '\'' + ' appeared' + str(total) + ' times. People\'s reaction on the keyword.')
+    ax.pie(sizes, labels = percents, colors = colors)
+    ax.legend(labels = sentiments, loc='lower left')
+    ax.set_title('Reaction of people on the keyword \'' + searched_term + '\'' + ' which appeared ' + str(total) + ' time/s.')
     ax.axis('equal')
 
 
