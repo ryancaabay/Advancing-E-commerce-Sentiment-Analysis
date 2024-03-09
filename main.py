@@ -12,9 +12,12 @@ import customtkinter as ctk
 from textblob import TextBlob
 import matplotlib.pyplot as plt
 from xgboost import plot_importance
+from sklearn.model_selection import cross_val_score
 from sklearn.feature_extraction.text import CountVectorizer
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score 
 from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
+
 import warnings
 warnings.filterwarnings("ignore", category=FutureWarning)
 
@@ -85,21 +88,21 @@ class TabView(ctk.CTkTabview):
 
         self.upvotes_label = ctk.CTkLabel(master=self.sliders_frame, text="Upvotes", font=("Arial", 13))
         self.upvotes_label.grid(row=0, column=0, padx=(45, 0), pady=(120, 0), sticky="sw")
-        self.upvotes_slider = ctk.CTkSlider(master=self.sliders_frame, height=220, from_=0, to=10, number_of_steps=10, orientation="vertical", command=self.update_upvotes_label)
+        self.upvotes_slider = ctk.CTkSlider(master=self.sliders_frame, height=220, from_=0, to=10, number_of_steps=10, orientation="vertical", command=lambda value: self.update_feature_label(self.upvotes_value_label, value))
         self.upvotes_slider.grid(row=1, column=0, padx=(60, 0), pady=(0, 90), sticky="sw")
         self.upvotes_value_label = ctk.CTkLabel(master=self.sliders_frame, text="5", font=("Arial", 13))
         self.upvotes_value_label.grid(row=1, column=0, padx=(2, 0), pady=(0, 60), sticky="swe")
 
         self.total_votes_label = ctk.CTkLabel(master=self.sliders_frame, text="Total Votes", font=("Arial", 13))
         self.total_votes_label.grid(row=0, column=1, padx=(39, 0), pady=(120, 0), sticky="sw")
-        self.total_votes_slider = ctk.CTkSlider(master=self.sliders_frame, height=220, from_=0, to=10, number_of_steps=10, orientation="vertical", command=self.update_total_votes_label)
+        self.total_votes_slider = ctk.CTkSlider(master=self.sliders_frame, height=220, from_=0, to=10, number_of_steps=10, orientation="vertical", command=lambda value: self.update_feature_label(self.total_votes_value_label, value))
         self.total_votes_slider.grid(row=1, column=1, padx=(64, 0), pady=(0, 90), sticky="sw")
         self.total_votes_value_label = ctk.CTkLabel(master=self.sliders_frame, text="5", font=("Arial", 13))
         self.total_votes_value_label.grid(row=1, column=1, padx=(0, 4), pady=(0, 60), sticky="swe")
         
         self.rating_label = ctk.CTkLabel(master=self.sliders_frame, text="Rating", font=("Arial", 13))
         self.rating_label.grid(row=0, column=2, padx=(38, 0), pady=(120, 0), sticky="sw")
-        self.rating_slider = ctk.CTkSlider(master=self.sliders_frame, height=220, from_=1, to=5, number_of_steps=4, orientation="vertical", command=self.update_rating_label)
+        self.rating_slider = ctk.CTkSlider(master=self.sliders_frame, height=220, from_=1, to=5, number_of_steps=4, orientation="vertical", command=lambda value: self.update_feature_label(self.rating_value_label, value))
         self.rating_slider.grid(row=1, column=2, padx=(48, 0), pady=(0, 90), sticky="sw")
         self.rating_value_label = ctk.CTkLabel(master=self.sliders_frame, text="3", font=("Arial", 13))
         self.rating_value_label.grid(row=1, column=2, padx=(0, 6), pady=(0, 60), sticky="swe")
@@ -131,41 +134,51 @@ class TabView(ctk.CTkTabview):
         self.accuracy_score_label.grid(row=0, column=1, padx=(0, 374), pady=(120, 0), sticky="ne")
         self.accuracy_score_bar = ctk.CTkProgressBar(master=self.results_frame, width=350, orientation="horizontal")
         self.accuracy_score_bar.grid(row=0, column=1, padx=(0, 80), pady=(150, 0), sticky="ne")
-        self.accuracy_score_bar.set(value=0.88)
-        self.accuracy_score_percentage = ctk.CTkLabel(master=self.results_frame, text="88%", font=("Arial", 13), bg_color="transparent")
+        self.accuracy_score_bar.set(value=0.00)
+        self.accuracy_score_percentage = ctk.CTkLabel(master=self.results_frame, text="0%", font=("Arial", 13), bg_color="transparent")
         self.accuracy_score_percentage.grid(row=0, column=1, padx=(0, 40), pady=(139, 0), sticky="ne")
+        self.after(1000, self.animate_metric_bar, self.accuracy_score_bar, accuracy_score)
+        self.after(1000, self.animate_metric_label, self.accuracy_score_percentage, accuracy_score)
 
         self.precision_score_label = ctk.CTkLabel(master=self.results_frame, text="Precision", font=("Arial", 13), bg_color="transparent")
         self.precision_score_label.grid(row=0, column=1, padx=(0, 376), pady=(180, 0), sticky="ne")
         self.precision_score_bar = ctk.CTkProgressBar(master=self.results_frame, width=350, orientation="horizontal")
         self.precision_score_bar.grid(row=0, column=1, padx=(0, 80), pady=(210, 0), sticky="ne")
-        self.precision_score_bar.set(value=0.86)
-        self.precision_score_percentage = ctk.CTkLabel(master=self.results_frame, text="86%", font=("Arial", 13), bg_color="transparent")
+        self.precision_score_bar.set(value=0.00)
+        self.precision_score_percentage = ctk.CTkLabel(master=self.results_frame, text="0%", font=("Arial", 13), bg_color="transparent")
         self.precision_score_percentage.grid(row=0, column=1, padx=(0, 40), pady=(199, 0), sticky="ne")
+        self.after(1000, self.animate_metric_bar, self.precision_score_bar, precision_score)
+        self.after(1000, self.animate_metric_label, self.precision_score_percentage, precision_score)
 
         self.recall_score_label = ctk.CTkLabel(master=self.results_frame, text="Recall", font=("Arial", 13), bg_color="transparent")
         self.recall_score_label.grid(row=0, column=1, padx=(0, 394), pady=(240, 0), sticky="ne")
         self.recall_score_bar = ctk.CTkProgressBar(master=self.results_frame, width=350, orientation="horizontal")
         self.recall_score_bar.grid(row=0, column=1, padx=(0, 80), pady=(270, 0), sticky="ne")
-        self.recall_score_bar.set(value=0.84)
-        self.recall_score_percentage = ctk.CTkLabel(master=self.results_frame, text="84%", font=("Arial", 13), bg_color="transparent")
+        self.recall_score_bar.set(value=0.00)
+        self.recall_score_percentage = ctk.CTkLabel(master=self.results_frame, text="0%", font=("Arial", 13), bg_color="transparent")
         self.recall_score_percentage.grid(row=0, column=1, padx=(0, 40), pady=(259, 0), sticky="ne")
+        self.after(1000, self.animate_metric_bar, self.recall_score_bar, recall_score)
+        self.after(1000, self.animate_metric_label, self.recall_score_percentage, recall_score)
 
         self.f1_score_label = ctk.CTkLabel(master=self.results_frame, text="F1", font=("Arial", 13), bg_color="transparent")
         self.f1_score_label.grid(row=0, column=1, padx=(0, 414), pady=(300, 0), sticky="ne")
         self.f1_score_bar = ctk.CTkProgressBar(master=self.results_frame, width=350, orientation="horizontal")
         self.f1_score_bar.grid(row=0, column=1, padx=(0, 80), pady=(330, 0), sticky="ne")
-        self.f1_score_bar.set(value=0.82)
-        self.f1_score_percentage = ctk.CTkLabel(master=self.results_frame, text="82%", font=("Arial", 13), bg_color="transparent")
+        self.f1_score_bar.set(value=0.00)
+        self.f1_score_percentage = ctk.CTkLabel(master=self.results_frame, text="0%", font=("Arial", 13), bg_color="transparent")
         self.f1_score_percentage.grid(row=0, column=1, padx=(0, 40), pady=(319, 0), sticky="ne")
+        self.after(1000, self.animate_metric_bar, self.f1_score_bar, f1_score)
+        self.after(1000, self.animate_metric_label, self.f1_score_percentage, f1_score)
 
         self.cv_score_label = ctk.CTkLabel(master=self.results_frame, text="Cross-Validation", font=("Arial", 13), bg_color="transparent")
         self.cv_score_label.grid(row=0, column=1, padx=(0, 335), pady=(360, 0), sticky="ne")
         self.cv_score_bar = ctk.CTkProgressBar(master=self.results_frame, width=350, orientation="horizontal")
         self.cv_score_bar.grid(row=0, column=1, padx=(0, 80), pady=(390, 0), sticky="ne")
-        self.cv_score_bar.set(value=0.86)
-        self.cv_score_percentage = ctk.CTkLabel(master=self.results_frame, text="86%", font=("Arial", 13), bg_color="transparent")
+        self.cv_score_bar.set(value=0.00)
+        self.cv_score_percentage = ctk.CTkLabel(master=self.results_frame, text="0%", font=("Arial", 13), bg_color="transparent")
         self.cv_score_percentage.grid(row=0, column=1, padx=(0, 40), pady=(379, 0), sticky="ne")
+        self.after(1000, self.animate_metric_bar, self.cv_score_bar, cross_val_score)
+        self.after(1000, self.animate_metric_label, self.cv_score_percentage, cross_val_score)
 
     
     def update_sentiment_display(self, y_pred):
@@ -196,16 +209,26 @@ class TabView(ctk.CTkTabview):
         self.result_image_show.configure(image=self.result_image)
 
 
-    def update_upvotes_label(self, value):
-        self.upvotes_value_label.configure(text=int(float(value)))
+    def update_feature_label(self, label, value):
+        label.configure(text=int(float(value)))
     
 
-    def update_total_votes_label(self, value):
-        self.total_votes_value_label.configure(text=int(float(value)))
+    def animate_metric_bar(self, metric_bar, metric_score):
+        current_value = metric_bar.get()
+
+        if current_value < metric_score:
+            current_value += 0.01  # Adjust this value to control the speed of the animation
+            metric_bar.set(current_value)
+            app.after(10, self.animate_metric_bar, metric_bar, metric_score)  # Adjust the delay as needed
 
 
-    def update_rating_label(self, value):
-        self.rating_value_label.configure(text=int(float(value)))
+    def animate_metric_label(self, metric_label, metric_score):
+        current_value = int(metric_label.cget("text").replace('%', ''))
+
+        if current_value < round(float(metric_score) * 100, 2):
+            current_value += 1
+            metric_label.configure(text=str(current_value) + "%")
+            app.after(10, self.animate_metric_label, metric_label, metric_score)
 
 
     def create_data_visualization_tab(self):
@@ -272,7 +295,7 @@ class TabView(ctk.CTkTabview):
             plt.tight_layout() 
 
         elif current_option == "Reaction on Keyword":
-            self.keyword_input = ctk.CTkInputDialog(text="Type in desired keyword/s:", title="Keyword Input Dialog")
+            self.keyword_input = ctk.CTkInputDialog(text="Type in desired keyword/s:", title="Reaction on Keyword")
             self.keyword = self.keyword_input.get_input()
             self.fig, self.ax = plt.subplots()
             plot_reaction_on_keyword(df, self.keyword, ax=self.ax)
@@ -351,14 +374,22 @@ class TabView(ctk.CTkTabview):
         for all_rows in self.result_tree_view.get_children():
             self.result_tree_view.delete(all_rows)
 
-        search_query = self.search_entry.get().strip().lower()
-        search_words = search_query.split(' ')
+        search_parts = self.search_entry.get().strip().lower().split(' ')
 
-        if all(word.isdigit() for word in search_words):
-            self.filtered_dataframe = self.comparison_dataframe[self.comparison_dataframe.apply(lambda row: all(word in row.astype(str).values for word in search_words), axis=1)]
-
+        if len(search_parts) % 2 == 0:
+            # if search query contains an even number of parts, treat them as column-value pairs
+            mask = pd.Series([True]*len(self.comparison_dataframe))
+            for i in range(0, len(search_parts), 2):
+                column, search_word = search_parts[i], search_parts[i+1]
+                mask = mask & self.comparison_dataframe[column].astype(str).str.lower().str.contains(search_word)
+            self.filtered_dataframe = self.comparison_dataframe[mask]
         else:
-            self.filtered_dataframe = self.comparison_dataframe[self.comparison_dataframe.apply(lambda row: all(any(word in str(value).lower() for value in row.values) for word in search_words), axis=1)]
+            # if search query does not contain an even number of parts, treat it as a general search
+            if all(word.isdigit() for word in search_parts):
+                mask = self.comparison_dataframe.astype(str).apply(lambda row: all(word in row.values for word in search_parts) or any(word in str(row.name).lower() for word in search_parts), axis=1)
+            else:
+                mask = self.comparison_dataframe.apply(lambda row: all(any(word in str(value).lower() for value in row.values) for word in search_parts) or any(word in str(row.name).lower() for word in search_parts), axis=1)
+            self.filtered_dataframe = self.comparison_dataframe[mask]
 
         for index, row in self.filtered_dataframe.iterrows():
             values = list(row.values)
@@ -407,6 +438,7 @@ def plot_most_frequent(df, ax):
 def plot_reaction_on_keyword(df, keyword, ax):
     df = mc.copy()
 
+
     def get_xgbert_value(value):
         if value == 0:
             return "Negative"
@@ -415,13 +447,16 @@ def plot_reaction_on_keyword(df, keyword, ax):
         elif value == 2:
             return "Positive"
         
+
     def percentage(part, whole):
         if whole == 0:
             return 0.0
         return 100 * float(part) / float(whole)
     
+
     def custom_autopct(pct):
         return ('%1.1f%%' % pct) if pct > 0 else ''
+
 
     df['xgbert'] = df['xgbert'].apply(get_xgbert_value)
 
@@ -526,11 +561,23 @@ def predict():
 if __name__ == "__main__":
     df = pd.read_csv('dataset/reviews_preprocessed.csv')
     mc = pd.read_csv('dataset/model_comparison.csv')
+
     model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
     model = AutoModelForSequenceClassification.from_pretrained(model_name)
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     classifier = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)
+
     current_system_model = joblib.load('model/main/xgbert.pkl')
+    X = joblib.load('model/main/X.pkl')
+    y = joblib.load('model/main/y.pkl')
+    X_test = joblib.load('model/main/X_test.pkl')
+    y_test = joblib.load('model/main/y_test.pkl')
+    y_pred = current_system_model.predict(X_test)
+    accuracy_score = accuracy_score(y_test, y_pred,)
+    precision_score = precision_score(y_test,y_pred, average='weighted')
+    recall_score = recall_score(y_test,y_pred, average='weighted')
+    f1_score = f1_score(y_test, y_pred, average='weighted')
+    cross_val_score = cross_val_score(current_system_model, X, y, cv=10).mean()
 
     app = App()
 
