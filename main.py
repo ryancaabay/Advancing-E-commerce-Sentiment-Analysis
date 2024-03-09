@@ -16,7 +16,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
 import warnings
 warnings.filterwarnings("ignore", category=FutureWarning)
-\
+
 
 class App(ctk.CTk):
     def __init__(self):
