@@ -18,6 +18,7 @@ import warnings
 warnings.filterwarnings("ignore", category=FutureWarning)
 
 
+
 class App(ctk.CTk):
     def __init__(self):
         super().__init__()
@@ -444,7 +445,7 @@ def plot_reaction_on_keyword(df, keyword, ax):
 
     ax.pie(sizes, labels = labels, colors = colors)
     ax.legend(labels, loc="best")
-    ax.set_title('How people are reacting on ' + searched_term + ' by analyzing ' + str(total) + ' Reviews.')
+    ax.set_title('\'' + searched_term + '\'' + ' appeared' + str(total) + ' times. People\'s reaction on the keyword.')
     ax.axis('equal')
 
 
