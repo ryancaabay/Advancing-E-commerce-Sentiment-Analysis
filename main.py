@@ -14,6 +14,8 @@ from xgboost import plot_importance
 from sklearn.feature_extraction.text import CountVectorizer
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
+import warnings
+warnings.filterwarnings("ignore", category=FutureWarning)
 
 
 class App(ctk.CTk):
@@ -269,7 +271,10 @@ class TabView(ctk.CTkTabview):
             plt.tight_layout() 
 
         elif current_option == "Reaction on Keyword":
-            pass
+            self.dialog = ctk.CTkInputDialog(text="Type in a keyword:", title="Keyword Input")
+            self.keyword = self.dialog.get_input()
+            self.fig, self.ax = plt.subplots()
+            plot_reaction_on_keyword(df, self.keyword, ax=self.ax)
         
         self.visualization_canvas =  FigureCanvasTkAgg(self.fig, master=self.visualization_canvas_frame)
         self.visualization_canvas.draw()
@@ -315,7 +320,7 @@ class TabView(ctk.CTkTabview):
         self.dataset_canvas_frame.grid_columnconfigure(0, weight=1)
         self.dataset_canvas_frame.grid_rowconfigure(0, weight=1)
 
-        #generate_model_comparison()
+        generate_model_comparison()
         self.comparison_dataframe = pd.read_csv('dataset/model_comparison.csv')
         self.column_names = list(self.comparison_dataframe)  
         self.result_tree_view = ttk.Treeview(master=self.dataset_canvas_frame, selectmode='browse')
@@ -324,7 +329,7 @@ class TabView(ctk.CTkTabview):
         self.result_tree_view['columns'] = self.column_names
 
         for self.column_name in self.column_names:
-            self.result_tree_view.column(self.column_name, width=80, anchor='c')
+            self.result_tree_view.column(self.column_name, width=30, anchor='c')
             self.result_tree_view.heading(self.column_name, text=self.column_name)
 
         self.data_list = self.comparison_dataframe.values.tolist()
@@ -384,17 +389,63 @@ def plot_polarity_subjectivity(df, ax1, ax2):
     
 def plot_most_frequent(df, ax):
     df['review'] = df['review'].apply(lambda x: contractions.fix(x))
-    cv = CountVectorizer(stop_words = 'english')
-    words = cv.fit_transform(df['review'])
+    count_vector = CountVectorizer(stop_words = 'english')
+    words = count_vector.fit_transform(df['review'])
     sum_words = words.sum(axis=0)
 
-    words_freq = [(word, sum_words[0, idx]) for word, idx in cv.vocabulary_.items()]
+    words_freq = [(word, sum_words[0, idx]) for word, idx in count_vector.vocabulary_.items()]
     words_freq = sorted(words_freq, key = lambda x: x[1], reverse = True)
     frequency = pd.DataFrame(words_freq, columns=['word', 'freq'])
 
     color = plt.cm.ocean(np.linspace(0, 1, 21))
     frequency.head(20).plot(x='word', y='freq', kind='bar', color = color, ax=ax)
     plt.title("Most Frequently Occuring Words - Top 20")
+                                         
+def plot_reaction_on_keyword(df, keyword, ax):
+    df = mc.copy()
+
+    def get_xgbert_value(value):
+        if value == 0:
+            return "Negative"
+        elif value == 1:
+            return "Neutral"
+        elif value == 2:
+            return "Positive"
+
+    df['xgbert'] = df['xgbert'].apply(get_xgbert_value)
+
+    searched_term = keyword
+
+    df = df[df['review'].str.contains(searched_term, na=False)]
+
+    negative = len(df[df['xgbert'] == 'Negative'])
+    neutral = len(df[df['xgbert'] == 'Neutral'])
+    positive = len(df[df['xgbert'] == 'Positive'])
+
+    def percentage(part, whole):
+        if whole == 0:
+            return '0.00'
+        temp = 100 * float(part) / float(whole)
+        return format(temp, '.2f')
+
+    total = negative + neutral + positive
+
+    if total == 0:
+        print("No reviews found for the keyword.")
+        return
+
+    positive = percentage(positive, total)
+    negative = percentage(negative, total)
+    neutral = percentage(neutral, total)
+
+    sizes = [positive, neutral, negative]
+    colors = ['yellowgreen', 'gold', 'red']
+    labels = ['Positive [' + str(positive) + '%]', 'Neutral [' + str(neutral) + '%]', 'Negative [' + str(negative) + '%]']
+
+    ax.pie(sizes, labels = labels, colors = colors)
+    ax.legend(labels, loc="best")
+    ax.set_title('How people are reacting on ' + searched_term + ' by analyzing ' + str(total) + ' Reviews.')
+    ax.axis('equal')
 
 
 def generate_model_comparison():
@@ -406,11 +457,18 @@ def generate_model_comparison():
     comparison_y_pred = current_system_model.predict(comparison_X)
     
     comparison_df['review'] = reviews 
-    comparison_df['sentiment'] = sentiments
+    comparison_df['bert'] = sentiments
     comparison_df['xgbert'] = comparison_y_pred
 
     comparison_df.reset_index(inplace=True)
     comparison_df.rename(columns={'index': 'id'}, inplace=True)
+
+    if 'polarity' in comparison_df.columns:
+        comparison_df['polarity'] = comparison_df['polarity'].round(2)
+    if 'subjectivity' in comparison_df.columns:
+        comparison_df['subjectivity'] = comparison_df['subjectivity'].round(2)
+    if 'confidence' in comparison_df.columns:
+        comparison_df['confidence'] = comparison_df['confidence'].round(2)
 
     comparison_df.to_csv('dataset/model_comparison.csv', index=False)
 
@@ -462,6 +520,7 @@ def predict():
 
 if __name__ == "__main__":
     df = pd.read_csv('dataset/reviews_preprocessed.csv')
+    mc = pd.read_csv('dataset/model_comparison.csv')
     model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
     model = AutoModelForSequenceClassification.from_pretrained(model_name)
     tokenizer = AutoTokenizer.from_pretrained(model_name)
