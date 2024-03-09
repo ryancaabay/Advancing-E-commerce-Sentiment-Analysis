@@ -414,6 +414,14 @@ def plot_reaction_on_keyword(df, keyword, ax):
             return "Neutral"
         elif value == 2:
             return "Positive"
+        
+    def percentage(part, whole):
+        if whole == 0:
+            return 0.0
+        return 100 * float(part) / float(whole)
+    
+    def custom_autopct(pct):
+        return ('%1.1f%%' % pct) if pct > 0 else ''
 
     df['xgbert'] = df['xgbert'].apply(get_xgbert_value)
 
@@ -424,12 +432,6 @@ def plot_reaction_on_keyword(df, keyword, ax):
     negative = len(df[df['xgbert'] == 'Negative'])
     neutral = len(df[df['xgbert'] == 'Neutral'])
     positive = len(df[df['xgbert'] == 'Positive'])
-
-    def percentage(part, whole):
-        if whole == 0:
-            return '0.00'
-        temp = 100 * float(part) / float(whole)
-        return format(temp, '.2f')
 
     total = negative + neutral + positive
 
@@ -443,13 +445,11 @@ def plot_reaction_on_keyword(df, keyword, ax):
 
     sizes = [positive, neutral, negative]
     colors = ['yellowgreen', 'gold', 'red']
-    sentiments = ['Positive', 'Neutral', 'Negative']
-    percents = [str(positive) + '%', str(neutral) + '%', str(negative) + '%']
-    #labels = ['Positive (' + str(positive) + '%)', 'Neutral (' + str(neutral) + '%)', 'Negative (' + str(negative) + '%)']
-
-    ax.pie(sizes, labels = percents, colors = colors)
-    ax.legend(labels = sentiments, loc='lower left')
-    ax.set_title('Reaction of people on the keyword \'' + searched_term + '\'' + ' which appeared ' + str(total) + ' time/s.')
+    labels = ['Positive', 'Neutral', 'Negative']
+    
+    ax.pie(sizes, colors = colors, autopct=custom_autopct)
+    ax.legend(labels, loc='lower left')
+    ax.set_title('Reaction of People on the Keyword \'' + searched_term + '\'' + ' which appeared ' + str(total) + ' time/s.')
     ax.axis('equal')
 
 
