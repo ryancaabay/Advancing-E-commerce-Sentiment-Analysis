@@ -266,7 +266,7 @@ class TabView(ctk.CTkTabview):
         self.visualization_canvas_frame.grid_rowconfigure(0, weight=1)
 
         self.fig, self.ax = plt.subplots()
-        plot_importance(current_system_model, ax=self.ax)
+        plot_importance(current_model, ax=self.ax)
 
         self.visualization_canvas = FigureCanvasTkAgg(self.fig, master=self.visualization_canvas_frame)
         self.visualization_canvas.draw()
@@ -283,7 +283,7 @@ class TabView(ctk.CTkTabview):
 
         if current_option == "Feature Importance":
             self.fig, self.ax = plt.subplots()
-            plot_importance(current_system_model, ax=self.ax)
+            plot_importance(current_model, ax=self.ax)
 
         elif current_option == "Polarity vs. Subjectivity":
             self.fig, (self.ax1, self.ax2) = plt.subplots(1, 2)
@@ -494,7 +494,7 @@ def generate_model_comparison():
     comparison_df = df.drop(['review', 'sentiment'], axis='columns')
 
     comparison_X = comparison_df
-    comparison_y_pred = current_system_model.predict(comparison_X)
+    comparison_y_pred = current_model.predict(comparison_X)
     
     comparison_df['review'] = reviews 
     comparison_df['bert'] = sentiments
@@ -553,7 +553,7 @@ def predict():
     y = data['sentiment']
     
     single_row = pd.DataFrame(X.iloc[0]).transpose()
-    y_pred = current_system_model.predict(single_row)
+    y_pred = current_model.predict(single_row)
 
     app.tab_view.update_sentiment_display(y_pred)
 
