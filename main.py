@@ -567,17 +567,16 @@ if __name__ == "__main__":
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     classifier = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)
 
-    current_system_model = joblib.load('model/main/xgbert.pkl')
-    X = joblib.load('model/main/X.pkl')
-    y = joblib.load('model/main/y.pkl')
-    X_test = joblib.load('model/main/X_test.pkl')
-    y_test = joblib.load('model/main/y_test.pkl')
-    y_pred = current_system_model.predict(X_test)
+    current_model, X, y, X_test, y_test = (joblib.load(f'model/main/{name}') for name in 
+                                                             ['xgbert.pkl', 'X.pkl', 'y.pkl', 'X_test.pkl', 'y_test.pkl'])
+    
+    y_pred = current_model.predict(X_test)
+
     accuracy_score = accuracy_score(y_test, y_pred,)
     precision_score = precision_score(y_test,y_pred, average='weighted')
     recall_score = recall_score(y_test,y_pred, average='weighted')
     f1_score = f1_score(y_test, y_pred, average='weighted')
-    cross_val_score = cross_val_score(current_system_model, X, y, cv=10).mean()
+    cross_val_score = cross_val_score(current_model, X, y, cv=10).mean()
 
     app = App()
 
