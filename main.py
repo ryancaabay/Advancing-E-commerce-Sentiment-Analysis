@@ -372,7 +372,7 @@ class TabView(ctk.CTkTabview):
         for all_rows in self.result_tree_view.get_children():
             self.result_tree_view.delete(all_rows)
 
-        search_parts = self.search_entry.get().strip().lower().split(' ')
+        search_parts = self.search_entry.get().strip().lower().split(':')
 
         if len(search_parts) % 2 == 0:
             # if search query contains an even number of parts, treat them as column-value pairs
