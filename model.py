@@ -192,7 +192,6 @@ def train_xgboost_model():
                 'reg_lambda': [0.1, 0.5, 1.0, 5.0, 10.0],
                 'reg_alpha': [0, 0.1, 0.3, 0.5, 0.7],
                 'eval_metric': ['rmse', 'logloss', 'merror'],
-                'early_stopping_rounds': [10, 15, 20, 25, 30]
             }
 
     random_params = {
@@ -207,7 +206,6 @@ def train_xgboost_model():
                 'reg_lambda': uniform(0.1, 10.0),  
                 'reg_alpha': uniform(0, 0.7),  
                 'eval_metric': ['rmse', 'logloss', 'merror'],
-                'early_stopping_rounds': randint(10, 30)  
             }
 
     best_params_preset = {
