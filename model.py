@@ -168,6 +168,7 @@ def train_xgboost_model():
     X = dataframe.drop(columns=['sentiment'])
     y = dataframe['sentiment']
 
+    '''
     params = {
                 "objective": ['multi:softmax'],
                 "learning_rate": [0.05, 0.10, 0.15, 0.20, 0.25, 0.30],
@@ -176,7 +177,24 @@ def train_xgboost_model():
                 "gamma": [0.0, 0.1, 0.2 , 0.3, 0.4],
                 "colsample_bytree": [0.3, 0.4, 0.5 , 0.7],
                 "subsample": [0.5, 0.6, 0.7, 0.8, 0.9]
-             } 
+             }'''
+    
+    params = {
+                'objective': ['multi:softmax'],
+                'n_estimators': [100, 150, 200, 250, 300],
+                'learning_rate': [0.01, 0.05, 0.1, 0.15, 0.2],
+                'max_depth': [3, 4, 5, 6, 7],
+                'min_child_weight': [1, 2, 3, 4, 5],
+                'subsample': [0.6, 0.7, 0.8, 0.9, 1.0],
+                'colsample_bytree': [0.6, 0.7, 0.8, 0.9, 1.0],
+                'gamma': [0, 0.05, 0.1, 0.15, 0.2],
+                'reg_lambda': [0.1, 0.5, 1.0, 5.0, 10.0],
+                'reg_alpha': [0, 0.1, 0.3, 0.5, 0.7],
+                'eval_metric': ['rmse', 'logloss', 'merror'],
+                'early_stopping_rounds': [10, 15, 20, 25, 30]
+            }
+
+
     
     params_preset = {
                         "colsample_bytree": 0.5, 
