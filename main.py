@@ -216,9 +216,9 @@ class TabView(ctk.CTkTabview):
         current_value = metric_bar.get()
 
         if current_value < metric_score:
-            current_value += 0.01  # Adjust this value to control the speed of the animation
+            current_value += 0.01  
             metric_bar.set(current_value)
-            app.after(20, self.animate_metric_bar, metric_bar, metric_score)  # Adjust the delay as needed
+            app.after(20, self.animate_metric_bar, metric_bar, metric_score)  
 
 
     def animate_metric_label(self, metric_label, metric_score):
@@ -321,7 +321,7 @@ class TabView(ctk.CTkTabview):
 
         self.search_entry = ctk.CTkEntry(master=self.search_filter_frame, width=200, corner_radius=5, font=("Arial", 13))
         self.search_entry.grid(row=0, column=0, padx=(50, 0), pady=(160, 0), sticky="nw")
-        self.search_entry.bind('<KeyRelease>', self.filter_search)
+        #self.search_entry.bind('<KeyRelease>', self.filter_search) #
         self.search_entry_label = ctk.CTkLabel(master=self.search_filter_frame, text="Filter data by keyword:", font=("Arial", 13), fg_color="transparent")
         self.search_entry_label.grid(row=0, column=0, padx=(50, 0), pady=(130, 0), sticky="nw")
 
@@ -344,8 +344,8 @@ class TabView(ctk.CTkTabview):
         self.dataset_canvas_frame.grid_columnconfigure(0, weight=1)
         self.dataset_canvas_frame.grid_rowconfigure(0, weight=1)
 
-        #generate_model_comparison()
-    #'''
+        generate_model_comparison()
+    '''
         self.comparison_dataframe = pd.read_csv('dataset/model_comparison.csv')
         self.column_names = list(self.comparison_dataframe)  
         self.result_tree_view = ttk.Treeview(master=self.dataset_canvas_frame, selectmode='browse')
@@ -394,7 +394,7 @@ class TabView(ctk.CTkTabview):
         for index, row in self.filtered_dataframe.iterrows():
             values = list(row.values)
             self.result_tree_view.insert("", 'end', values=values)
-    #'''
+    '''
 
     def display_review_text(self, event):
         selected_items = self.result_tree_view.selection()
@@ -560,7 +560,7 @@ def predict():
 
 if __name__ == "__main__":
     df = pd.read_csv('dataset/reviews_preprocessed.csv')
-    mc = pd.read_csv('dataset/model_comparison.csv')
+    #mc = pd.read_csv('dataset/model_comparison.csv') #
 
     model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
     model = AutoModelForSequenceClassification.from_pretrained(model_name)
