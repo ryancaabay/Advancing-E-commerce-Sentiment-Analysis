@@ -319,7 +319,8 @@ class TabView(ctk.CTkTabview):
 
         self.search_entry = ctk.CTkEntry(master=self.search_filter_frame, width=200, corner_radius=5, font=("Arial", 13))
         self.search_entry.grid(row=0, column=0, padx=(50, 0), pady=(160, 0), sticky="nw")
-        self.search_entry.bind('<KeyRelease>', self.filter_search) #
+        #self.search_entry.bind('<KeyRelease>', self.filter_search) 
+        self.search_entry.bind('<Return>', self.filter_search)
         self.search_entry_label = ctk.CTkLabel(master=self.search_filter_frame, text="Filter data by keyword:", font=("Arial", 13), fg_color="transparent")
         self.search_entry_label.grid(row=0, column=0, padx=(50, 0), pady=(130, 0), sticky="nw")
 
