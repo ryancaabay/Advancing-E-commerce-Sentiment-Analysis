@@ -171,7 +171,6 @@ def train_xgboost_model():
 
     '''
     params = {
-                'objective': ['multi:softmax'],
                 'learning_rate': [0.05, 0.10, 0.15],
                 'max_depth': [3, 4, 5],
                 'min_child_weight': [3, 5, 7],
@@ -181,7 +180,6 @@ def train_xgboost_model():
              }'''
     
     grid_params = {
-                'objective': ['multi:softmax'],
                 'n_estimators': [100, 150, 200, 250, 300],
                 'learning_rate': [0.01, 0.05, 0.1, 0.15, 0.2],
                 'max_depth': [3, 4, 5, 6, 7],
@@ -195,7 +193,6 @@ def train_xgboost_model():
             }
 
     random_params = {
-                'objective': ['multi:softmax'],
                 'n_estimators': randint(100, 300),  
                 'learning_rate': uniform(0.01, 0.2),  
                 'max_depth': randint(3, 7),  
@@ -214,14 +211,13 @@ def train_xgboost_model():
                         'learning_rate': 0.05, 
                         'max_depth': 4, 
                         'min_child_weight': 7, 
-                        'objective': 'multi:softmax',
                         'subsample': 0.8
                     }
     
-    xgb_model = XGBClassifier()
+    xgb_model = XGBClassifier(objective='multi:softmax')
 
     #grid_search = GridSearchCV(xgb_model, param_grid = grid_params, refit=True, scoring='roc_auc_ovr', n_jobs=-1, cv=5, verbose=3)
-    random_search = RandomizedSearchCV(xgb_model, param_distributions = random_params, refit=True, scoring='roc_auc_ovr', n_jobs=-1, cv=5, verbose=3)
+    random_search = RandomizedSearchCV(xgb_model, param_distributions = random_params, refit=True, scoring='roc_auc_ovr', n_jobs=-1, cv=5, verbose=3, n_iter=1000)
 
     xgb = XGBoost(xgb_model)
     xgb.split_data(X, y)
