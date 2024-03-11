@@ -170,49 +170,53 @@ def train_xgboost_model():
     y = dataframe['sentiment']
 
     '''
-    params = {
+    params =    {
                 'learning_rate': [0.05, 0.10, 0.15],
                 'max_depth': [3, 4, 5],
                 'min_child_weight': [3, 5, 7],
                 'gamma': [0.0, 0.2, 0.4],
                 'colsample_bytree': [0.3, 0.4, 0.5],
                 'subsample': [0.6, 0.7, 0.8]
-             }'''
+                }'''
     
-    grid_params = {
-                'n_estimators': [100, 150, 200, 250, 300],
-                'learning_rate': [0.01, 0.05, 0.1, 0.15, 0.2],
-                'max_depth': [3, 4, 5, 6, 7],
-                'min_child_weight': [1, 2, 3, 4, 5],
-                'subsample': [0.6, 0.7, 0.8, 0.9, 1.0],
-                'colsample_bytree': [0.6, 0.7, 0.8, 0.9, 1.0],
-                'gamma': [0, 0.05, 0.1, 0.15, 0.2],
-                'reg_lambda': [0.1, 0.5, 1.0, 5.0, 10.0],
-                'reg_alpha': [0, 0.1, 0.3, 0.5, 0.7],
-                'eval_metric': ['rmse', 'logloss', 'merror'],
-            }
+    grid_params =   {
+                    'n_estimators': [100, 150, 200, 250, 300],
+                    'learning_rate': [0.01, 0.05, 0.1, 0.15, 0.2],
+                    'max_depth': [3, 4, 5, 6, 7],
+                    'min_child_weight': [1, 2, 3, 4, 5],
+                    'subsample': [0.6, 0.7, 0.8, 0.9, 1.0],
+                    'colsample_bytree': [0.6, 0.7, 0.8, 0.9, 1.0],
+                    'gamma': [0, 0.05, 0.1, 0.15, 0.2],
+                    'reg_lambda': [0.1, 0.5, 1.0, 5.0, 10.0],
+                    'reg_alpha': [0, 0.1, 0.3, 0.5, 0.7],
+                    'eval_metric': ['rmse', 'logloss', 'merror']
+                    }
 
     random_params = {
-                'n_estimators': randint(100, 300),  
-                'learning_rate': uniform(0.01, 0.2),  
-                'max_depth': randint(3, 7),  
-                'min_child_weight': randint(1, 5),  
-                'subsample': uniform(0.6, 1.0),  
-                'colsample_bytree': uniform(0.6, 1.0),  
-                'gamma': uniform(0, 0.2),  
-                'reg_lambda': uniform(0.1, 10.0),  
-                'reg_alpha': uniform(0, 0.7),  
-                'eval_metric': ['rmse', 'logloss', 'merror'],
-            }
+                    'n_estimators': randint(100, 300),  
+                    'learning_rate': uniform(0.01, 0.2),  
+                    'max_depth': randint(3, 7),  
+                    'min_child_weight': randint(1, 5),  
+                    'subsample': uniform(0.6, 1.0),  
+                    'colsample_bytree': uniform(0.6, 1.0),  
+                    'gamma': uniform(0, 0.2),  
+                    'reg_lambda': uniform(0.1, 10.0),  
+                    'reg_alpha': uniform(0, 0.7),  
+                    'eval_metric': ['rmse', 'logloss', 'merror']
+                    }
 
     best_params_preset = {
-                        'colsample_bytree': 0.5, 
-                        'gamma': 0.4, 
-                        'learning_rate': 0.05, 
-                        'max_depth': 4, 
-                        'min_child_weight': 7, 
-                        'subsample': 0.8
-                    }
+                        'n_estimators': 200,
+                        'learning_rate': 0.1,
+                        'max_depth': 5,
+                        'min_child_weight': 3,
+                        'subsample': 0.8,
+                        'colsample_bytree': 0.8,
+                        'gamma': 0.1,
+                        'reg_lambda': 1.0,
+                        'reg_alpha': [0, 0.1, 0.3, 0.5, 0.7],
+                        'eval_metric': 'logloss'
+                        }
     
     xgb_model = XGBClassifier(objective='multi:softmax')
 
