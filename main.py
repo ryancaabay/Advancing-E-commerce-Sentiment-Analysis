@@ -345,7 +345,8 @@ class TabView(ctk.CTkTabview):
         self.dataset_canvas_frame.grid_columnconfigure(0, weight=1)
         self.dataset_canvas_frame.grid_rowconfigure(0, weight=1)
 
-        generate_model_comparison()
+        #generate_model_comparison()
+    #'''
         self.comparison_dataframe = pd.read_csv('dataset/model_comparison.csv')
         self.column_names = list(self.comparison_dataframe)  
         self.result_tree_view = ttk.Treeview(master=self.dataset_canvas_frame, selectmode='browse')
@@ -366,7 +367,7 @@ class TabView(ctk.CTkTabview):
             self.result_tree_view.insert("", 'end', iid=index, values=values)
         
         self.result_tree_view.bind('<<TreeviewSelect>>', self.display_review_text)
-
+        
 
     def filter_search(self, event):
         self.result_tree_view.selection_remove(self.result_tree_view.selection())
@@ -394,7 +395,7 @@ class TabView(ctk.CTkTabview):
         for index, row in self.filtered_dataframe.iterrows():
             values = list(row.values)
             self.result_tree_view.insert("", 'end', values=values)
-    
+    #'''
 
     def display_review_text(self, event):
         selected_items = self.result_tree_view.selection()
@@ -560,7 +561,7 @@ def predict():
 
 if __name__ == "__main__":
     df = pd.read_csv('dataset/reviews_preprocessed.csv')
-    mc = pd.read_csv('dataset/model_comparison.csv')
+    #mc = pd.read_csv('dataset/model_comparison.csv')
 
     model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
     model = AutoModelForSequenceClassification.from_pretrained(model_name)
