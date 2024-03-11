@@ -17,7 +17,6 @@ from sklearn.feature_extraction.text import CountVectorizer
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score 
 from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
-
 import warnings
 warnings.filterwarnings("ignore", category=FutureWarning)
 

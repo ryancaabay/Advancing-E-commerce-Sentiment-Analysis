@@ -9,6 +9,7 @@ import pandas as pd
 from textblob import TextBlob
 from xgboost import XGBClassifier
 from unicodedata import normalize
+from scipy.stats import uniform, randint
 from sklearn.model_selection import train_test_split, GridSearchCV, RandomizedSearchCV, cross_val_score
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score 
 from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
@@ -179,7 +180,7 @@ def train_xgboost_model():
                 'subsample': [0.6, 0.7, 0.8]
              }'''
     
-    params = {
+    grid_params = {
                 'objective': ['multi:softmax'],
                 'n_estimators': [100, 150, 200, 250, 300],
                 'learning_rate': [0.01, 0.05, 0.1, 0.15, 0.2],
@@ -194,9 +195,22 @@ def train_xgboost_model():
                 'early_stopping_rounds': [10, 15, 20, 25, 30]
             }
 
+    random_params = {
+                'objective': ['multi:softmax'],
+                'n_estimators': randint(100, 300),  
+                'learning_rate': uniform(0.01, 0.2),  
+                'max_depth': randint(3, 7),  
+                'min_child_weight': randint(1, 5),  
+                'subsample': uniform(0.6, 1.0),  
+                'colsample_bytree': uniform(0.6, 1.0),  
+                'gamma': uniform(0, 0.2),  
+                'reg_lambda': uniform(0.1, 10.0),  
+                'reg_alpha': uniform(0, 0.7),  
+                'eval_metric': ['rmse', 'logloss', 'merror'],
+                'early_stopping_rounds': randint(10, 30)  
+            }
 
-    
-    params_preset = {
+    best_params_preset = {
                         'colsample_bytree': 0.5, 
                         'gamma': 0.4, 
                         'learning_rate': 0.05, 
@@ -207,12 +221,15 @@ def train_xgboost_model():
                     }
     
     xgb_model = XGBClassifier()
-    grid_search = RandomizedSearchCV(xgb_model, param_grid = params, refit=True, scoring='roc_auc_ovr', n_jobs=-1, cv=5, verbose=3)
+
+    #grid_search = GridSearchCV(xgb_model, param_grid = grid_params, refit=True, scoring='roc_auc_ovr', n_jobs=-1, cv=5, verbose=3)
+    random_search = RandomizedSearchCV(xgb_model, param_distributions = random_params, refit=True, scoring='roc_auc_ovr', n_jobs=-1, cv=5, verbose=3)
 
     xgb = XGBoost(xgb_model)
     xgb.split_data(X, y)
-    xgb.search_best_params(grid_search)
-    #xgb.set_best_params(params_preset)
+    #xgb.search_best_params(grid_search)
+    xgb.search_best_params(random_search)
+    #xgb.set_best_params(best_params_preset)
 
     print(' ')
     print(xgb.best_params)
