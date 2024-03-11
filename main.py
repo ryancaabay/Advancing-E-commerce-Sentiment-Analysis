@@ -219,7 +219,7 @@ class TabView(ctk.CTkTabview):
         if current_value < metric_score:
             current_value += 0.01  # Adjust this value to control the speed of the animation
             metric_bar.set(current_value)
-            app.after(10, self.animate_metric_bar, metric_bar, metric_score)  # Adjust the delay as needed
+            app.after(20, self.animate_metric_bar, metric_bar, metric_score)  # Adjust the delay as needed
 
 
     def animate_metric_label(self, metric_label, metric_score):
@@ -228,7 +228,7 @@ class TabView(ctk.CTkTabview):
         if current_value < round(float(metric_score) * 100, 2):
             current_value += 1
             metric_label.configure(text=str(current_value) + "%")
-            app.after(10, self.animate_metric_label, metric_label, metric_score)
+            app.after(15, self.animate_metric_label, metric_label, metric_score)
 
 
     def create_data_visualization_tab(self):
@@ -561,7 +561,7 @@ def predict():
 
 if __name__ == "__main__":
     df = pd.read_csv('dataset/reviews_preprocessed.csv')
-    #mc = pd.read_csv('dataset/model_comparison.csv')
+    mc = pd.read_csv('dataset/model_comparison.csv')
 
     model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
     model = AutoModelForSequenceClassification.from_pretrained(model_name)

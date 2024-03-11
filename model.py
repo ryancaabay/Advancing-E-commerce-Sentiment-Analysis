@@ -9,7 +9,7 @@ import pandas as pd
 from textblob import TextBlob
 from xgboost import XGBClassifier
 from unicodedata import normalize
-from sklearn.model_selection import train_test_split, GridSearchCV, cross_val_score
+from sklearn.model_selection import train_test_split, GridSearchCV, RandomizedSearchCV, cross_val_score
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score 
 from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
 
@@ -189,7 +189,7 @@ def train_xgboost_model():
                     }
     
     xgb_model = XGBClassifier()
-    grid_search = GridSearchCV(xgb_model, param_grid = params, refit=True, scoring='roc_auc_ovr', n_jobs=-1, cv=5, verbose=3)
+    grid_search = RandomizedSearchCV(xgb_model, param_grid = params, refit=True, scoring='roc_auc_ovr', n_jobs=-1, cv=5, verbose=3)
 
     xgb = XGBoost(xgb_model)
     xgb.split_data(X, y)
