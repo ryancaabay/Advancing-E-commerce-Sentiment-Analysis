@@ -344,7 +344,6 @@ class TabView(ctk.CTkTabview):
         self.dataset_canvas_frame.grid_columnconfigure(0, weight=1)
         self.dataset_canvas_frame.grid_rowconfigure(0, weight=1)
 
-        #generate_model_comparison() #
     #'''
         self.comparison_dataframe = pd.read_csv('dataset/model_comparison.csv')
         self.column_names = list(self.comparison_dataframe)  
@@ -560,7 +559,10 @@ def predict():
 
 if __name__ == "__main__":
     df = pd.read_csv('dataset/reviews_preprocessed.csv')
-    mc = pd.read_csv('dataset/model_comparison.csv') #
+
+    generate_model_comparison() #
+    
+    mc = pd.read_csv('dataset/model_comparison.csv') 
 
     model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
     model = AutoModelForSequenceClassification.from_pretrained(model_name)

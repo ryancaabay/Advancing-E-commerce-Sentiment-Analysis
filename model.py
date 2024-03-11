@@ -184,25 +184,25 @@ def train_xgboost_model():
                     'learning_rate': [0.01, 0.05, 0.1, 0.15, 0.2],
                     'max_depth': [3, 4, 5, 6, 7],
                     'min_child_weight': [1, 2, 3, 4, 5],
-                    'subsample': [0.6, 0.7, 0.8, 0.9, 1.0],
-                    'colsample_bytree': [0.6, 0.7, 0.8, 0.9, 1.0],
+                    'subsample': [0.5, 0.6, 0.7, 0.8, 0.9],
+                    'colsample_bytree': [0.5, 0.6, 0.7, 0.8, 0.9],
                     'gamma': [0, 0.05, 0.1, 0.15, 0.2],
                     'reg_lambda': [0.1, 0.5, 1.0, 5.0, 10.0],
                     'reg_alpha': [0, 0.1, 0.3, 0.5, 0.7],
-                    'eval_metric': ['rmse', 'logloss', 'merror']
+                    'eval_metric': ['rmse', 'logloss', 'merror'],
                     }
 
     random_params = {
                     'n_estimators': randint(100, 300),  
-                    'learning_rate': uniform(0.01, 0.2),  
-                    'max_depth': randint(3, 7),  
-                    'min_child_weight': randint(1, 5),  
-                    'subsample': uniform(0.6, 1.0),  
-                    'colsample_bytree': uniform(0.6, 1.0),  
+                    'learning_rate': uniform(0.001, 0.1),  
+                    'max_depth': randint(3, 5),  
+                    'min_child_weight': randint(3, 5),  
+                    'subsample': uniform(0.5, 0.9),  
+                    'colsample_bytree': uniform(0.5, 0.9),  
                     'gamma': uniform(0, 0.2),  
-                    'reg_lambda': uniform(0.1, 10.0),  
+                    'reg_lambda': uniform(1.0, 100.0),  
                     'reg_alpha': uniform(0, 0.7),  
-                    'eval_metric': ['rmse', 'logloss', 'merror']
+                    'eval_metric': ['rmse', 'logloss', 'merror'],
                     }
 
     best_params_preset = {
@@ -213,9 +213,9 @@ def train_xgboost_model():
                         'subsample': 0.8,
                         'colsample_bytree': 0.8,
                         'gamma': 0.1,
-                        'reg_lambda': 1.0,
-                        'reg_alpha': [0, 0.1, 0.3, 0.5, 0.7],
-                        'eval_metric': 'logloss'
+                        'reg_lambda': 50.0,
+                        'reg_alpha': 0.3,
+                        'eval_metric': 'logloss',
                         }
     
     xgb_model = XGBClassifier(objective='multi:softmax')
