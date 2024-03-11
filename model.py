@@ -10,9 +10,9 @@ from textblob import TextBlob
 from xgboost import XGBClassifier
 from unicodedata import normalize
 from scipy.stats import uniform, randint
-from sklearn.model_selection import train_test_split, GridSearchCV, RandomizedSearchCV, cross_val_score
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score 
 from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
+from sklearn.model_selection import train_test_split, GridSearchCV, RandomizedSearchCV, cross_val_score
 
 
 class Dataset:
@@ -171,12 +171,12 @@ def train_xgboost_model():
 
     '''
     params =    {
-                'learning_rate': [0.05, 0.10, 0.15],
-                'max_depth': [3, 4, 5],
-                'min_child_weight': [3, 5, 7],
-                'gamma': [0.0, 0.2, 0.4],
-                'colsample_bytree': [0.3, 0.4, 0.5],
-                'subsample': [0.6, 0.7, 0.8]
+                'learning_rate': [0.01, 0.05, 0.1, 0.15, 0.2],
+                'max_depth': [3, 4, 5, 6, 7],
+                'min_child_weight': [1, 2, 3, 4, 5],
+                'gamma': [0, 0.05, 0.1, 0.15, 0.2],
+                'colsample_bytree': [0.3, 0.4, 0.5, 0.6, 0.7],
+                'subsample': [0.5, 0.6, 0.7, 0.8, 0.9]
                 }'''
     
     grid_params =   {
@@ -185,7 +185,7 @@ def train_xgboost_model():
                     'max_depth': [3, 4, 5, 6, 7],
                     'min_child_weight': [1, 2, 3, 4, 5],
                     'subsample': [0.5, 0.6, 0.7, 0.8, 0.9],
-                    'colsample_bytree': [0.5, 0.6, 0.7, 0.8, 0.9],
+                    'colsample_bytree': [0.3, 0.4, 0.5, 0.6, 0.7],
                     'gamma': [0, 0.05, 0.1, 0.15, 0.2],
                     'reg_lambda': [0.1, 0.5, 1.0, 5.0, 10.0],
                     'reg_alpha': [0, 0.1, 0.3, 0.5, 0.7],
@@ -193,16 +193,16 @@ def train_xgboost_model():
                     }
 
     random_params = {
-                    'n_estimators': randint(100, 300),  
+                    #'n_estimators': randint(100, 300),  
                     'learning_rate': uniform(0.001, 0.1),  
                     'max_depth': randint(3, 5),  
                     'min_child_weight': randint(3, 5),  
                     'subsample': uniform(0.5, 0.9),  
-                    'colsample_bytree': uniform(0.5, 0.9),  
+                    'colsample_bytree': uniform(0.3, 0.7),  
                     'gamma': uniform(0, 0.2),  
-                    'reg_lambda': uniform(1.0, 100.0),  
-                    'reg_alpha': uniform(0, 0.7),  
-                    'eval_metric': ['rmse', 'logloss', 'merror'],
+                    #'reg_lambda': uniform(1.0, 100.0),  
+                    #'reg_alpha': uniform(0, 0.7),  
+                    #'eval_metric': ['rmse', 'logloss', 'merror'],
                     }
 
     best_params_preset = {

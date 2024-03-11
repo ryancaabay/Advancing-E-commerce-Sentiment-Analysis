@@ -17,8 +17,6 @@ from sklearn.feature_extraction.text import CountVectorizer
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score 
 from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
-import warnings
-warnings.filterwarnings("ignore", category=FutureWarning)
 
 
 class App(ctk.CTk):
@@ -344,7 +342,7 @@ class TabView(ctk.CTkTabview):
         self.dataset_canvas_frame.grid_columnconfigure(0, weight=1)
         self.dataset_canvas_frame.grid_rowconfigure(0, weight=1)
 
-    #'''
+
         self.comparison_dataframe = pd.read_csv('dataset/model_comparison.csv')
         self.column_names = list(self.comparison_dataframe)  
         self.result_tree_view = ttk.Treeview(master=self.dataset_canvas_frame, selectmode='browse')
@@ -393,7 +391,7 @@ class TabView(ctk.CTkTabview):
         for index, row in self.filtered_dataframe.iterrows():
             values = list(row.values)
             self.result_tree_view.insert("", 'end', values=values)
-    #'''
+
 
     def display_review_text(self, event):
         selected_items = self.result_tree_view.selection()
@@ -560,10 +558,6 @@ def predict():
 if __name__ == "__main__":
     df = pd.read_csv('dataset/reviews_preprocessed.csv')
 
-    generate_model_comparison() #
-    
-    mc = pd.read_csv('dataset/model_comparison.csv') 
-
     model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
     model = AutoModelForSequenceClassification.from_pretrained(model_name)
     tokenizer = AutoTokenizer.from_pretrained(model_name)
@@ -579,6 +573,9 @@ if __name__ == "__main__":
     recall_score = recall_score(y_test,y_pred, average='weighted')
     f1_score = f1_score(y_test, y_pred, average='weighted')
     cross_val_score = cross_val_score(current_model, X, y, cv=10).mean()
+
+    generate_model_comparison()
+    mc = pd.read_csv('dataset/model_comparison.csv') 
 
     app = App()
 
