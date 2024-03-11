@@ -170,13 +170,13 @@ def train_xgboost_model():
 
     '''
     params = {
-                "objective": ['multi:softmax'],
-                "learning_rate": [0.05, 0.10, 0.15, 0.20, 0.25, 0.30],
-                "max_depth": [3, 4, 5, 6, 8, 10, 12, 15],
-                "min_child_weight": [1, 3, 5, 7],
-                "gamma": [0.0, 0.1, 0.2 , 0.3, 0.4],
-                "colsample_bytree": [0.3, 0.4, 0.5 , 0.7],
-                "subsample": [0.5, 0.6, 0.7, 0.8, 0.9]
+                'objective': ['multi:softmax'],
+                'learning_rate': [0.05, 0.10, 0.15],
+                'max_depth': [3, 4, 5],
+                'min_child_weight': [3, 5, 7],
+                'gamma': [0.0, 0.2, 0.4],
+                'colsample_bytree': [0.3, 0.4, 0.5],
+                'subsample': [0.6, 0.7, 0.8]
              }'''
     
     params = {
@@ -197,13 +197,13 @@ def train_xgboost_model():
 
     
     params_preset = {
-                        "colsample_bytree": 0.5, 
-                        "gamma": 0.4, 
-                        "learning_rate": 0.05, 
-                        "max_depth": 4, 
-                        "min_child_weight": 7, 
-                        "objective": 'multi:softmax',
-                        "subsample": 0.8
+                        'colsample_bytree': 0.5, 
+                        'gamma': 0.4, 
+                        'learning_rate': 0.05, 
+                        'max_depth': 4, 
+                        'min_child_weight': 7, 
+                        'objective': 'multi:softmax',
+                        'subsample': 0.8
                     }
     
     xgb_model = XGBClassifier()
