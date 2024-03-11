@@ -285,6 +285,7 @@ class TabView(ctk.CTkTabview):
         elif current_option == "Polarity vs. Subjectivity":
             self.fig, (self.ax1, self.ax2) = plt.subplots(1, 2)
             plot_polarity_subjectivity(df, ax1=self.ax1, ax2=self.ax2)
+            plt.tight_layout() 
 
         elif current_option == "Most Frequent Words":
             self.fig, self.ax = plt.subplots()
