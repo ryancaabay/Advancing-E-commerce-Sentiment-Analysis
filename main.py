@@ -590,7 +590,7 @@ if __name__ == "__main__":
     f1_score = f1_score(y_test, y_pred, average='weighted')
     cross_val_score = cross_val_score(current_model, X, y, cv=10).mean()
 
-    generate_model_comparison()
+    #generate_model_comparison()
     mc = pd.read_csv('dataset/model_comparison.csv') 
 
     app = App()
