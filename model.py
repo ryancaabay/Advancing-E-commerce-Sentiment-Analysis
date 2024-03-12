@@ -217,8 +217,8 @@ def train_xgboost_model():
     
     xgb_model = XGBClassifier(objective='multi:softmax', max_delta_step=1)
 
-    #grid_search = GridSearchCV(xgb_model, param_grid = grid_params, refit=True, scoring='roc_auc_ovr', n_jobs=-1, cv=5, verbose=3)
-    random_search = RandomizedSearchCV(xgb_model, param_distributions = random_params, refit=True, scoring='roc_auc_ovr', n_jobs=-1, cv=10, verbose=3, n_iter=100)
+    grid_search = GridSearchCV(xgb_model, param_grid = grid_params, scoring='roc_auc_ovr' n_jobs=-1 refit=True, cv=5, verbose=3)
+    random_search = RandomizedSearchCV(xgb_model, param_distributions = random_params, n_iter=1000, scoring='roc_auc_ovr', n_jobs=-1, refit=True, cv=10, verbose=3)
 
     xgb = XGBoost(xgb_model)
     xgb.split_data(X, y)
