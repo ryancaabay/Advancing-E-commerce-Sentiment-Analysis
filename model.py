@@ -171,46 +171,46 @@ def train_xgboost_model():
 
     '''
     params =    {
-                'max_depth': [3, 4, 5, 6, 7],
-                'min_child_weight': [1, 2, 3, 4, 5],
-                'gamma': [0, 0.05, 0.1, 0.15, 0.2],
-                'colsample_bytree': [0.3, 0.4, 0.5, 0.6, 0.7],
+                'max_depth': [3, 5, 7, 9],
+                'min_child_weight': [3, 5, 7, 9],
+                'gamma': [0, 0.1, 0.2, 0.3],
+                'colsample_bytree': [0.3, 0.5, 0.7, 0.9],
                 'subsample': [0.5, 0.6, 0.7, 0.8, 0.9]
-                'learning_rate': [0.01, 0.05, 0.1, 0.15, 0.2],
+                'learning_rate': [0.001, 0.01, 0.05, 0.1],
                 }'''
     
     grid_params =   {
-                    'max_depth': [3, 4, 5, 6, 7],
-                    'min_child_weight': [1, 2, 3, 4, 5],
-                    'gamma': [0, 0.05, 0.1, 0.15, 0.2],
-                    'subsample': [0.5, 0.6, 0.7, 0.8, 0.9],
-                    'colsample_bytree': [0.3, 0.4, 0.5, 0.6, 0.7],
-                    'learning_rate': [0.01, 0.05, 0.1, 0.15, 0.2],
-                    'n_estimators': [100, 150, 200, 250, 300],
-                    'reg_lambda': [0.1, 0.5, 1.0, 5.0, 10.0],
-                    'reg_alpha': [0, 0.1, 0.3, 0.5, 0.7],
+                    'max_depth': [3, 5, 7, 9],
+                    'min_child_weight': [3, 5, 7, 9],
+                    'gamma': [0, 0.1, 0.2, 0.3],
+                    'subsample': [0.3, 0.5, 0.7, 0.9],
+                    'colsample_bytree': [0.3, 0.5, 0.7, 0.9],
+                    'learning_rate': [0.001, 0.01, 0.05, 0.1],
+                    'n_estimators': [200, 300, 400, 500],
+                    'reg_lambda': [1.0, 25.0, 50.0, 100.0],
+                    'reg_alpha': [0, 0.2, 0.4, 0.6],
                     }
 
     random_params = {
-                    'max_depth': randint(3, 5),  
-                    'min_child_weight': randint(3, 5),
-                    'gamma': uniform(0, 0.2),    
-                    'subsample': uniform(0.5, 0.9),  
-                    'colsample_bytree': uniform(0.3, 0.7),
-                    'n_estimators': randint(100, 300),  
-                    'learning_rate': uniform(0.001, 0.1),    
+                    'max_depth': randint(3, 9),  
+                    'min_child_weight': randint(3, 9),
+                    'gamma': uniform(0, 0.3),    
+                    'subsample': uniform(0.3, 0.9),  
+                    'colsample_bytree': uniform(0.3, 0.9),
+                    'learning_rate': uniform(0.001, 0.1),
+                    'n_estimators': randint(200, 500),      
                     'reg_lambda': uniform(1.0, 100.0),  
-                    'reg_alpha': uniform(0, 0.7),  
+                    'reg_alpha': uniform(0, 0.6),  
                     }
 
     best_params_preset = {
-                        'max_depth': 5,
-                        'min_child_weight': 3,
-                        'gamma': 0.1,
-                        'subsample': 0.8,
-                        'colsample_bytree': 0.8,
+                        'max_depth': 6,
+                        'min_child_weight': 6,
+                        'gamma': 0.2,
+                        'subsample': 0.6,
+                        'colsample_bytree': 0.6,
                         'learning_rate': 0.1,
-                        'n_estimators': 200,
+                        'n_estimators': 300,
                         'reg_lambda': 50.0,
                         'reg_alpha': 0.3,
                         }
@@ -218,7 +218,7 @@ def train_xgboost_model():
     xgb_model = XGBClassifier(objective='multi:softmax', max_delta_step=1)
 
     #grid_search = GridSearchCV(xgb_model, param_grid = grid_params, refit=True, scoring='roc_auc_ovr', n_jobs=-1, cv=5, verbose=3)
-    random_search = RandomizedSearchCV(xgb_model, param_distributions = random_params, refit=True, scoring='roc_auc_ovr', n_jobs=-1, cv=5, verbose=3, n_iter=100)
+    random_search = RandomizedSearchCV(xgb_model, param_distributions = random_params, refit=True, scoring='roc_auc_ovr', n_jobs=-1, cv=10, verbose=3, n_iter=100)
 
     xgb = XGBoost(xgb_model)
     xgb.split_data(X, y)
