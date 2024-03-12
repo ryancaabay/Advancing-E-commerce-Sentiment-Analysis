@@ -10,9 +10,10 @@ from textblob import TextBlob
 from xgboost import XGBClassifier
 from unicodedata import normalize
 from scipy.stats import uniform, randint
+from sklearn.experimental import enable_halving_search_cv  
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score 
 from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
-from sklearn.model_selection import train_test_split, GridSearchCV, RandomizedSearchCV, cross_val_score
+from sklearn.model_selection import train_test_split, HalvingGridSearchCV, HalvingRandomSearchCV, cross_val_score
 
 
 class Dataset:
@@ -217,13 +218,13 @@ def train_xgboost_model():
     
     xgb_model = XGBClassifier(objective='multi:softmax', max_delta_step=1)
 
-    grid_search = GridSearchCV(xgb_model, param_grid = grid_params, scoring='roc_auc_ovr' n_jobs=-1 refit=True, cv=5, verbose=3)
-    random_search = RandomizedSearchCV(xgb_model, param_distributions = random_params, n_iter=1000, scoring='roc_auc_ovr', n_jobs=-1, refit=True, cv=10, verbose=3)
+    #halving_grid_search = HalvingGridSearchCV(xgb_model, param_grid=grid_params, scoring='roc_auc_ovr', n_jobs=-1, refit=True, cv=10, verbose=3)
+    halving_random_search = HalvingRandomSearchCV(xgb_model, param_distributions=random_params, n_candidates='exhaust', factor=2, scoring='roc_auc_ovr', n_jobs=-1, refit=True, cv=10, verbose=3)
 
     xgb = XGBoost(xgb_model)
     xgb.split_data(X, y)
-    #xgb.search_best_params(grid_search)
-    xgb.search_best_params(random_search)
+    #xgb.search_best_params(halving_grid_search)
+    xgb.search_best_params(halving_random_search)
     #xgb.set_best_params(best_params_preset)
 
     print(' ')
