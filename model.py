@@ -245,8 +245,8 @@ def display_evaluation_metrics():
     model_folder = input('\n\tEnter the name of the folder where model and variables are to be retrieved: ')
     model_name = input('\n\tEnter the file name of the model to be evaluated (Hint: file_name.pkl): ')
 
-    current_model, X, y, X_train, X_test, y_train, y_test = (joblib.load(f'model/{model_folder}/{name}') for name in 
-                                                             [model_name, 'X.pkl', 'y.pkl', 'X_train.pkl', 'X_test.pkl', 'y_train.pkl', 'y_test.pkl'])
+    current_model, X, y, X_train, X_test, y_train, y_test = (joblib.load(f'model/{model_folder}/{name}') for name 
+                                                             in [model_name, 'X.pkl', 'y.pkl', 'X_train.pkl', 'X_test.pkl', 'y_train.pkl', 'y_test.pkl'])
 
     y_train_pred = current_model.predict(X_train)
     y_pred = current_model.predict(X_test)
