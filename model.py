@@ -205,15 +205,15 @@ def train_xgboost_model():
                     }
 
     best_params_preset = {
-                        'max_depth': 6,
-                        'min_child_weight': 6,
-                        'gamma': 0.2,
-                        'subsample': 0.6,
-                        'colsample_bytree': 0.6,
-                        'learning_rate': 0.1,
-                        'n_estimators': 300,
-                        'reg_lambda': 50.0,
-                        'reg_alpha': 0.3,
+                        'max_depth': 7,
+                        'min_child_weight': 4,
+                        'gamma': 0.01,
+                        'subsample': 0.34,
+                        'colsample_bytree': 0.85,
+                        'learning_rate': 0.02,
+                        'n_estimators': 315,
+                        'reg_lambda': 34.73,
+                        'reg_alpha': 0.39,
                         }
     
     xgb_model = XGBClassifier(objective='multi:softmax')
