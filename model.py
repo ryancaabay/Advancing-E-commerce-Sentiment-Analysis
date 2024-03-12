@@ -94,9 +94,9 @@ class XGBoost:
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=.2)
 
 
-    def search_best_params(self, grid_search):
-        grid_search.fit(self.X_train, self.y_train)
-        self.best_params = grid_search.best_params_
+    def search_best_params(self, param_search):
+        param_search.fit(self.X_train, self.y_train)
+        self.best_params = param_search.best_params_
 
 
     def set_best_params(self, best_params):
@@ -171,7 +171,7 @@ def train_xgboost_model():
     y = dataframe['sentiment']
 
     '''
-    params =    {
+    grid_params =    {
                 'max_depth': [3, 5, 7, 9],
                 'min_child_weight': [3, 5, 7, 9],
                 'gamma': [0, 0.1, 0.2, 0.3],
@@ -180,7 +180,7 @@ def train_xgboost_model():
                 'learning_rate': [0.001, 0.01, 0.05, 0.1],
                 }'''
     
-    grid_params =   {
+    halving_grid_params =   {
                     'max_depth': [3, 5, 7, 9],
                     'min_child_weight': [3, 5, 7, 9],
                     'gamma': [0, 0.1, 0.2, 0.3],
@@ -192,7 +192,7 @@ def train_xgboost_model():
                     'reg_alpha': [0, 0.2, 0.4, 0.6],
                     }
 
-    random_params = {
+    halving_random_params = {
                     'max_depth': randint(3, 9),  
                     'min_child_weight': randint(3, 9),
                     'gamma': uniform(0, 0.3),    
@@ -216,10 +216,10 @@ def train_xgboost_model():
                         'reg_alpha': 0.3,
                         }
     
-    xgb_model = XGBClassifier(objective='multi:softmax', max_delta_step=1)
+    xgb_model = XGBClassifier(objective='multi:softmax')
 
-    #halving_grid_search = HalvingGridSearchCV(xgb_model, param_grid=grid_params, scoring='roc_auc_ovr', n_jobs=-1, refit=True, cv=10, verbose=3)
-    halving_random_search = HalvingRandomSearchCV(xgb_model, param_distributions=random_params, n_candidates='exhaust', factor=2, scoring='roc_auc_ovr', n_jobs=-1, refit=True, cv=10, verbose=3)
+    #halving_grid_search = HalvingGridSearchCV(xgb_model, param_grid=halving_grid_params, scoring='roc_auc_ovr', n_jobs=-1, refit=True, cv=10, verbose=3)
+    halving_random_search = HalvingRandomSearchCV(xgb_model, param_distributions=halving_random_params, n_candidates='exhaust', factor=2, scoring='roc_auc_ovr', n_jobs=-1, refit=True, cv=10, verbose=3)
 
     xgb = XGBoost(xgb_model)
     xgb.split_data(X, y)
