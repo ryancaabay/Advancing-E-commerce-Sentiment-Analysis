@@ -171,26 +171,26 @@ def train_xgboost_model():
     y = dataframe['sentiment']
 
     '''
-    grid_params =    {
-                'max_depth': [3, 5, 7, 9],
-                'min_child_weight': [3, 5, 7, 9],
-                'gamma': [0, 0.1, 0.2, 0.3],
-                'colsample_bytree': [0.3, 0.5, 0.7, 0.9],
-                'subsample': [0.5, 0.6, 0.7, 0.8, 0.9]
-                'learning_rate': [0.001, 0.01, 0.05, 0.1],
-                }'''
-    
-    halving_grid_params =   {
+    grid_params =   {
                     'max_depth': [3, 5, 7, 9],
                     'min_child_weight': [3, 5, 7, 9],
                     'gamma': [0, 0.1, 0.2, 0.3],
-                    'subsample': [0.3, 0.5, 0.7, 0.9],
                     'colsample_bytree': [0.3, 0.5, 0.7, 0.9],
+                    'subsample': [0.5, 0.6, 0.7, 0.8, 0.9]
                     'learning_rate': [0.001, 0.01, 0.05, 0.1],
-                    'n_estimators': [200, 300, 400, 500],
-                    'reg_lambda': [1.0, 25.0, 50.0, 100.0],
-                    'reg_alpha': [0, 0.2, 0.4, 0.6],
-                    }
+                    }'''
+    
+    halving_grid_params =   {
+                            'max_depth': [3, 5, 7, 9],
+                            'min_child_weight': [3, 5, 7, 9],
+                            'gamma': [0, 0.1, 0.2, 0.3],
+                            'subsample': [0.3, 0.5, 0.7, 0.9],
+                            'colsample_bytree': [0.3, 0.5, 0.7, 0.9],
+                            'learning_rate': [0.001, 0.01, 0.05, 0.1],
+                            'n_estimators': [200, 300, 400, 500],
+                            'reg_lambda': [1.0, 25.0, 50.0, 100.0],
+                            'reg_alpha': [0, 0.2, 0.4, 0.6],
+                            }
 
     halving_random_params = {
                     'max_depth': randint(3, 9),  
@@ -219,7 +219,8 @@ def train_xgboost_model():
     xgb_model = XGBClassifier(objective='multi:softmax')
 
     #halving_grid_search = HalvingGridSearchCV(xgb_model, param_grid=halving_grid_params, scoring='roc_auc_ovr', n_jobs=-1, refit=True, cv=10, verbose=3)
-    halving_random_search = HalvingRandomSearchCV(xgb_model, param_distributions=halving_random_params, n_candidates='exhaust', factor=2, scoring='roc_auc_ovr', n_jobs=-1, refit=True, cv=10, verbose=3)
+    halving_random_search = HalvingRandomSearchCV(xgb_model, param_distributions=halving_random_params, n_candidates='exhaust', factor=2, 
+                                                  scoring='roc_auc_ovr', n_jobs=-1, refit=True, cv=10, verbose=3)
 
     xgb = XGBoost(xgb_model)
     xgb.split_data(X, y)
@@ -294,7 +295,11 @@ if __name__ == "__main__":
     milliseconds = seconds % 1
     seconds = seconds - milliseconds
 
-    print(f"\n\nTime elapsed: {str(int(hours)).zfill(2)}:{str(int(minutes)).zfill(2)}:{str(int(seconds)).zfill(2)}.{str(int(milliseconds*100)).zfill(2)}")
+    print(f"\n\nTime elapsed: 
+          {str(int(hours)).zfill(2)}:
+          {str(int(minutes)).zfill(2)}:
+          {str(int(seconds)).zfill(2)}.
+          {str(int(milliseconds*100)).zfill(2)}")
 
     print("\n\nExiting system...\n\n")
     

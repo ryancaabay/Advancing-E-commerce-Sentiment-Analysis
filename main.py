@@ -76,7 +76,8 @@ class TabView(ctk.CTkTabview):
         self.tab("Sentiment Analysis").grid_columnconfigure((0, 1), weight=1)
         self.tab("Sentiment Analysis").grid_rowconfigure((0, 1), weight=1)
         
-        self.sliders_frame = ctk.CTkFrame(master=self.tab("Sentiment Analysis"), width=400, height=450, corner_radius=20, border_width=2, bg_color="transparent")
+        self.sliders_frame = ctk.CTkFrame(master=self.tab("Sentiment Analysis"), width=400, height=450, corner_radius=20, 
+                                          border_width=2, bg_color="transparent")
         self.sliders_frame.grid(row=0, column=0, columnspan=2, padx=(60, 0), pady=(20, 0), sticky="nw")
         self.sliders_frame.grid_propagate(False)
         self.sliders_frame.grid_columnconfigure((0, 1, 2), weight=1)
@@ -86,24 +87,24 @@ class TabView(ctk.CTkTabview):
 
         self.upvotes_label = ctk.CTkLabel(master=self.sliders_frame, text="Upvotes", font=("Arial", 13))
         self.upvotes_label.grid(row=0, column=0, padx=(45, 0), pady=(120, 0), sticky="sw")
-        self.upvotes_slider = ctk.CTkSlider(master=self.sliders_frame, height=220, from_=0, to=10, 
-                                            number_of_steps=10, orientation="vertical", command=lambda value: self.update_feature_label(self.upvotes_value_label, value))
+        self.upvotes_slider = ctk.CTkSlider(master=self.sliders_frame, height=220, from_=0, to=10, number_of_steps=10, 
+                                            orientation="vertical", command=lambda value: self.update_feature_label(self.upvotes_value_label, value))
         self.upvotes_slider.grid(row=1, column=0, padx=(60, 0), pady=(0, 90), sticky="sw")
         self.upvotes_value_label = ctk.CTkLabel(master=self.sliders_frame, text="5", font=("Arial", 13))
         self.upvotes_value_label.grid(row=1, column=0, padx=(2, 0), pady=(0, 60), sticky="swe")
 
         self.total_votes_label = ctk.CTkLabel(master=self.sliders_frame, text="Total Votes", font=("Arial", 13))
         self.total_votes_label.grid(row=0, column=1, padx=(39, 0), pady=(120, 0), sticky="sw")
-        self.total_votes_slider = ctk.CTkSlider(master=self.sliders_frame, height=220, from_=0, to=10, 
-                                                number_of_steps=10, orientation="vertical", command=lambda value: self.update_feature_label(self.total_votes_value_label, value))
+        self.total_votes_slider = ctk.CTkSlider(master=self.sliders_frame, height=220, from_=0, to=10, number_of_steps=10, 
+                                                orientation="vertical", command=lambda value: self.update_feature_label(self.total_votes_value_label, value))
         self.total_votes_slider.grid(row=1, column=1, padx=(64, 0), pady=(0, 90), sticky="sw")
         self.total_votes_value_label = ctk.CTkLabel(master=self.sliders_frame, text="5", font=("Arial", 13))
         self.total_votes_value_label.grid(row=1, column=1, padx=(0, 4), pady=(0, 60), sticky="swe")
         
         self.rating_label = ctk.CTkLabel(master=self.sliders_frame, text="Rating", font=("Arial", 13))
         self.rating_label.grid(row=0, column=2, padx=(38, 0), pady=(120, 0), sticky="sw")
-        self.rating_slider = ctk.CTkSlider(master=self.sliders_frame, height=220, from_=1, to=5, 
-                                           number_of_steps=4, orientation="vertical", command=lambda value: self.update_feature_label(self.rating_value_label, value))
+        self.rating_slider = ctk.CTkSlider(master=self.sliders_frame, height=220, from_=1, to=5, number_of_steps=4, 
+                                           orientation="vertical", command=lambda value: self.update_feature_label(self.rating_value_label, value))
         self.rating_slider.grid(row=1, column=2, padx=(48, 0), pady=(0, 90), sticky="sw")
         self.rating_value_label = ctk.CTkLabel(master=self.sliders_frame, text="3", font=("Arial", 13))
         self.rating_value_label.grid(row=1, column=2, padx=(0, 6), pady=(0, 60), sticky="swe")
@@ -118,7 +119,8 @@ class TabView(ctk.CTkTabview):
                                             border_width=0, text="↑", font=("Arial", 24), anchor="center", command=predict)
         self.predict_button.grid(row=1, column=1, padx=(0, 60), pady=(0, 65), sticky="se")
 
-        self.results_frame = ctk.CTkFrame(master=self.tab("Sentiment Analysis"), width=820, height=450, corner_radius=20, border_width=2, bg_color="transparent")
+        self.results_frame = ctk.CTkFrame(master=self.tab("Sentiment Analysis"), width=820, height=450, corner_radius=20, 
+                                          border_width=2, bg_color="transparent")
         self.results_frame.grid(row=0, column=0, columnspan=2, padx=(0, 60), pady=(20, 0), sticky="ne")
         self.results_frame.grid_propagate(False)
         self.results_frame.grid_columnconfigure((0, 1), weight=1)
@@ -130,7 +132,8 @@ class TabView(ctk.CTkTabview):
         self.result_image = ctk.CTkImage(light_image=self.result, size=(100, 100))
         self.result_image_show = ctk.CTkLabel(master=self.results_frame, image=self.result_image, text="", bg_color="transparent")
         self.result_image_show.grid(row=0, column=0, padx=(140, 0), pady=(120, 0), sticky="nw")
-        self.result_text = ctk.CTkLabel(master=self.results_frame, text="Hi there! Input a product review \nand I'll analyze its sentiment.", font=("Arial", 18), bg_color="transparent")
+        self.result_text = ctk.CTkLabel(master=self.results_frame, text="Hi there! Input a product review \nand I'll analyze its sentiment.", 
+                                        font=("Arial", 18), bg_color="transparent")
         self.result_text.grid(row=0, column=0, padx=(66, 0), pady=(240, 0), sticky="nw")
 
         self.accuracy_score_label = ctk.CTkLabel(master=self.results_frame, text="Accuracy", font=("Arial", 13), bg_color="transparent")
@@ -238,7 +241,8 @@ class TabView(ctk.CTkTabview):
         self.tab("Data Visualization").grid_columnconfigure((0, 1), weight=1)
         self.tab("Data Visualization").grid_rowconfigure((0, 1), weight=1)
 
-        self.generation_frame = ctk.CTkFrame(master=self.tab("Data Visualization"), width=300, height=596, corner_radius=20, border_width=2, bg_color="transparent")
+        self.generation_frame = ctk.CTkFrame(master=self.tab("Data Visualization"), width=300, height=596, corner_radius=20, 
+                                             border_width=2, bg_color="transparent")
         self.generation_frame.grid(row=0, column=0, columnspan=2, padx=(60, 0), pady=(20, 0), sticky="nw")
         self.generation_frame.grid_propagate(False)
         self.generation_frame.grid_columnconfigure(0, weight=1)
@@ -249,14 +253,16 @@ class TabView(ctk.CTkTabview):
         self.plot_options = ctk.CTkOptionMenu(master=self.generation_frame, width=200, corner_radius=5, 
                                               values=["Feature Importance", "Polarity vs. Subjectivity", "Most Frequent Words", "Reaction on Keyword"])
         self.plot_options.grid(row=0, column=0, padx=(50, 0), pady=(160, 0), sticky="nw")
-        self.plot_options_label = ctk.CTkLabel(master=self.generation_frame, text="Select visualization option:", font=("Arial", 13), fg_color="transparent")
+        self.plot_options_label = ctk.CTkLabel(master=self.generation_frame, text="Select visualization option:", font=("Arial", 13), 
+                                               fg_color="transparent")
         self.plot_options_label.grid(row=0, column=0, padx=(50, 0), pady=(130, 0), sticky="nw")
 
         self.generate_button = ctk.CTkButton(master=self.generation_frame, width=150, height=40, corner_radius=15, 
                                              text="Generate", font=("Arial", 18), anchor="center", command=self.generate_plot)
         self.generate_button.grid(row=1, column=0, padx=(76, 0), pady=(0, 50), sticky="sw")
 
-        self.visualization_frame = ctk.CTkFrame(master=self.tab("Data Visualization"), width=920, height=596, corner_radius=20, border_width=2, bg_color="transparent")
+        self.visualization_frame = ctk.CTkFrame(master=self.tab("Data Visualization"), width=920, height=596, corner_radius=20, 
+                                                border_width=2, bg_color="transparent")
         self.visualization_frame.grid(row=0, column=0, columnspan=2, padx=(0, 60), pady=(20, 0), sticky="ne")
         self.visualization_frame.grid_propagate(False)
         self.visualization_frame.grid_columnconfigure(0, weight=1)
@@ -264,7 +270,8 @@ class TabView(ctk.CTkTabview):
         self.visualization_frame_label = ctk.CTkLabel(master=self.visualization_frame, text="Visualization Window", font=("Arial", 24))
         self.visualization_frame_label.grid(row=0, column=0, padx=(0, 20), pady=(20, 0), sticky="ne")
 
-        self.visualization_canvas_frame = ctk.CTkFrame(master=self.visualization_frame, width=800, height=500, bg_color="transparent", fg_color="transparent")
+        self.visualization_canvas_frame = ctk.CTkFrame(master=self.visualization_frame, width=800, height=500, bg_color="transparent", 
+                                                       fg_color="transparent")
         self.visualization_canvas_frame.grid(row=1, column=0, padx=20, pady=20, sticky="nsew")
         self.visualization_canvas_frame.grid_propagate(False)
         self.visualization_canvas_frame.grid_columnconfigure(0, weight=1)
@@ -318,7 +325,8 @@ class TabView(ctk.CTkTabview):
         self.tab("Model Comparison").grid_columnconfigure((0, 1), weight=1)
         self.tab("Model Comparison").grid_rowconfigure((0, 1), weight=1)
 
-        self.search_filter_frame = ctk.CTkFrame(master=self.tab("Model Comparison"), width=300, height=596, corner_radius=20, border_width=2, bg_color="transparent")
+        self.search_filter_frame = ctk.CTkFrame(master=self.tab("Model Comparison"), width=300, height=596, corner_radius=20, 
+                                                border_width=2, bg_color="transparent")
         self.search_filter_frame.grid(row=0, column=0, columnspan=2, padx=(0, 60), pady=(20, 0), sticky="ne")
         self.search_filter_frame.grid_propagate(False)
         self.search_filter_frame.grid_columnconfigure(0, weight=1)
@@ -330,7 +338,8 @@ class TabView(ctk.CTkTabview):
         self.search_entry.grid(row=0, column=0, padx=(50, 0), pady=(160, 0), sticky="nw")
         #self.search_entry.bind('<KeyRelease>', self.filter_search) 
         self.search_entry.bind('<Return>', self.filter_search)
-        self.search_entry_label = ctk.CTkLabel(master=self.search_filter_frame, text="Filter data by keyword:", font=("Arial", 13), fg_color="transparent")
+        self.search_entry_label = ctk.CTkLabel(master=self.search_filter_frame, text="Filter data by keyword:", font=("Arial", 13), 
+                                               fg_color="transparent")
         self.search_entry_label.grid(row=0, column=0, padx=(50, 0), pady=(130, 0), sticky="nw")
 
         self.review_text = ctk.CTkTextbox(master=self.search_filter_frame, width=200, height=300, corner_radius=5, 
@@ -339,7 +348,8 @@ class TabView(ctk.CTkTabview):
         self.review_text.insert("1.0", "Review text of selected row goes here...")
         self.review_text.configure(state="disabled")
 
-        self.dataset_frame = ctk.CTkFrame(master=self.tab("Model Comparison"), width=920, height=596, corner_radius=20, border_width=2, bg_color="transparent")
+        self.dataset_frame = ctk.CTkFrame(master=self.tab("Model Comparison"), width=920, height=596, corner_radius=20, 
+                                          border_width=2, bg_color="transparent")
         self.dataset_frame.grid(row=0, column=0, columnspan=2, padx=(60, 0), pady=(20, 0), sticky="nw")
         self.dataset_frame.grid_propagate(False)
         self.dataset_frame.grid_columnconfigure(0, weight=1)
@@ -347,7 +357,8 @@ class TabView(ctk.CTkTabview):
         self.dataset_frame_label = ctk.CTkLabel(master=self.dataset_frame, text="Dataframe Window", font=("Arial", 24))
         self.dataset_frame_label.grid(row=0, column=0, padx=(20, 0), pady=(20, 0), sticky="nw")
 
-        self.dataset_canvas_frame = ctk.CTkFrame(master=self.dataset_frame, width=800, height=500, bg_color="transparent", fg_color="transparent")
+        self.dataset_canvas_frame = ctk.CTkFrame(master=self.dataset_frame, width=800, height=500, bg_color="transparent", 
+                                                 fg_color="transparent")
         self.dataset_canvas_frame.grid(row=1, column=0, padx=20, pady=20, sticky="nsew")
         self.dataset_canvas_frame.grid_propagate(False)
         self.dataset_canvas_frame.grid_columnconfigure(0, weight=1)
@@ -390,17 +401,18 @@ class TabView(ctk.CTkTabview):
             for i in range(0, len(search_parts), 2):
                 column, search_word = search_parts[i], search_parts[i+1]
                 mask = mask & self.comparison_dataframe[column].astype(str).str.lower().str.contains(search_word)
+                
             self.filtered_dataframe = self.comparison_dataframe[mask]
 
         else:
             # if search query does not contain an even number of parts, treat it as a general search
             if all(word.isdigit() for word in search_parts):
                 mask = self.comparison_dataframe.astype(str).apply(lambda row: all(word in row.values for word in search_parts) 
-                                                                   or any(word in str(row.name).lower() for word in search_parts), axis=1)
+                                                                            or any(word in str(row.name).lower() for word in search_parts), axis=1)
                 
             else:
                 mask = self.comparison_dataframe.apply(lambda row: all(any(word in str(value).lower() for value in row.values) for word in search_parts) 
-                                                       or any(word in str(row.name).lower() for word in search_parts), axis=1)
+                                                                    or any(word in str(row.name).lower() for word in search_parts), axis=1)
                 
             self.filtered_dataframe = self.comparison_dataframe[mask]
 
