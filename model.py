@@ -295,11 +295,7 @@ if __name__ == "__main__":
     milliseconds = seconds % 1
     seconds = seconds - milliseconds
 
-    print(f"""\n\nTime elapsed: 
-          {str(int(hours)).zfill(2)}:
-          {str(int(minutes)).zfill(2)}:
-          {str(int(seconds)).zfill(2)}.
-          {str(int(milliseconds*100)).zfill(2)}""")
+    print(f"\n\nTime elapsed: {str(int(hours)).zfill(2)}:{str(int(minutes)).zfill(2)}:{str(int(seconds)).zfill(2)}.{str(int(milliseconds*100)).zfill(2)}")
 
     print("\n\nExiting system...\n\n")
     
