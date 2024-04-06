@@ -591,8 +591,8 @@ if __name__ == "__main__":
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     classifier = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)
 
-    current_model, X, y, X_test, y_test = (joblib.load(f'model/main/{name}') for name 
-                                           in ['xgbert.pkl', 'X.pkl', 'y.pkl', 'X_test.pkl', 'y_test.pkl'])
+    current_model, X, y, X_test, y_test = (joblib.load(f'model/roberta/{name}') for name 
+                                           in ['roberta.pkl', 'X.pkl', 'y.pkl', 'X_test.pkl', 'y_test.pkl'])
     
     y_pred = current_model.predict(X_test)
 
