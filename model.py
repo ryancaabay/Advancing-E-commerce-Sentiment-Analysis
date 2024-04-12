@@ -150,7 +150,9 @@ def preprocess_dataset():
 
 
 def generate_bert_embeddings(df):
-    bert_model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
+    #bert_model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
+    bert_model_name = "lxyuan/distilbert-base-multilingual-cased-sentiments-student"
+    #bert_model_name = "mrm8488/distilroberta-finetuned-financial-news-sentiment-analysis"
     sentiment_mapping = {'negative': 0, 'neutral': 1, 'positive': 2}
     set_dataset_name = input('\nEnter the name of the preprocessed dataset to be saved: ')
 
