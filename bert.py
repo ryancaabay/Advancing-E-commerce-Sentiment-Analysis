@@ -1,27 +1,23 @@
-from transformers import BertTokenizer, BertForSequenceClassification
+from transformers import DistilBertTokenizer, DistilBertForSequenceClassification, AdamW
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
+from torch.cuda.amp import GradScaler, autocast
 import pandas as pd
 import torch
 from torch.utils.data import Dataset, DataLoader
 
-# Load the preprocessed dataset
 df = pd.read_csv('dataset/reviews_preprocessed.csv')
 
-# Split the dataset into training and testing sets
 X = df['review'].values
 y = df['sentiment'].values
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Load the BERT tokenizer and model
-tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-model = BertForSequenceClassification.from_pretrained('bert-base-uncased', num_labels=3)
+tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
+model = DistilBertForSequenceClassification.from_pretrained('distilbert-base-uncased', num_labels=3)
 
-# Tokenize the text data
 train_encodings = tokenizer(list(X_train), truncation=True, padding=True, return_tensors="pt")
 test_encodings = tokenizer(list(X_test), truncation=True, padding=True, return_tensors="pt")
 
-# Convert the tokenized data into a PyTorch Dataset
 class ReviewDataset(Dataset):
     def __init__(self, encodings, labels):
         self.encodings = encodings
@@ -38,29 +34,33 @@ class ReviewDataset(Dataset):
 train_dataset = ReviewDataset(train_encodings, y_train)
 test_dataset = ReviewDataset(test_encodings, y_test)
 
-# Create a DataLoader for training and testing sets
 train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
-# Train the model
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 model.to(device)
 model.train()
 
-optimizer = torch.optim.Adam(model.parameters(), lr=1e-5)
+optimizer = AdamW(model.parameters(), lr=1e-5)
+scaler = GradScaler()
 
 for epoch in range(2):
-    for batch in train_loader:
+    for i, batch in enumerate(train_loader):
         optimizer.zero_grad()
-        input_ids = batch['input_ids'].to(device)
-        attention_mask = batch['attention_mask'].to(device)
-        labels = batch['labels'].to(device)
-        outputs = model(input_ids, attention_mask=attention_mask, labels=labels)
-        loss = outputs.loss
-        loss.backward()
-        optimizer.step()
 
-# Predict the classes
+        with autocast():
+            input_ids = batch['input_ids'].to(device)
+            attention_mask = batch['attention_mask'].to(device)
+            labels = batch['labels'].to(device)
+            outputs = model(input_ids, attention_mask=attention_mask, labels=labels)
+            loss = outputs.loss
+
+        scaler.scale(loss).backward()
+
+        if (i + 1) % 4 == 0:
+            scaler.step(optimizer)
+            scaler.update()
+
 model.eval()
 y_pred = []
 with torch.no_grad():
@@ -70,5 +70,4 @@ with torch.no_grad():
         outputs = model(input_ids, attention_mask=attention_mask)
         y_pred.extend(torch.argmax(outputs.logits, dim=1).tolist())
 
-# Print the classification report
 print(classification_report(y_test, y_pred, target_names=['Negative', 'Neutral', 'Positive']))
