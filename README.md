@@ -1,6 +1,6 @@
 # Advancing E-commerce Sentiment Analysis
 
-<p style="text-align: center;">
+<p align="center">
   <img src="images/framework.png" width="480">
 </p>
 
