@@ -21,7 +21,7 @@ Through a systematic approach, our study addresses challenges in the e-commerce 
 ## Feature Importance
 
 <p align="center">
-  <img src="images/sentiment_analysis.png" width="480">
+  <img src="images/feature_importance.png" width="480">
 </p>
 
 ## Polarity vs. Subjectivity
