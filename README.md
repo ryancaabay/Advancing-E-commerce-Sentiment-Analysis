@@ -4,9 +4,9 @@
   <img src="images/framework.png" width="480">
 </p>
 
-Authors: [Princess Angeles] · [Ryan Caabay] · [Aaron Lasala]
+Authors: [Princess Angeles](https://www.linkedin.com/in/princess-rainbow-angeles-1894762ab/?originalSubdomain=ph) · [Ryan Caabay](https://www.linkedin.com/in/ryancaabay/) · [Aaron Lasala](https://www.linkedin.com/in/aaron-lasala-865155171/)
 
-Dataset: [Amazon Product Reviews] https://www.kaggle.com/datasets/arhamrumi/amazon-product-reviews
+Dataset: [Amazon Product Reviews](https://www.kaggle.com/datasets/arhamrumi/amazon-product-reviews)
 
 This is a code implementation of our thesis paper: [Advancing E-Commerce Sentiment Analysis: An Implementation of Bidirectional Encoder Representations from Transformers with Stochastic Gradient Boosting Ensemble]
 
