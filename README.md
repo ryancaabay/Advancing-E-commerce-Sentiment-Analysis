@@ -14,36 +14,36 @@ Through a systematic approach, our study addresses challenges in the e-commerce 
 
 ## Sentiment Analysis
 
-<p style="text-align: center;">
+<p align="center">
   <img src="images/sentiment_analysis.png" width="480">
 </p>
 
 ## Feature Importance
 
-<p style="text-align: center;">
+<p align="center">
   <img src="images/sentiment_analysis.png" width="480">
 </p>
 
 ## Polarity vs. Subjectivity
 
-<p style="text-align: center;">
+<p align="center">
   <img src="images/polarity_vs_subjectivity.png" width="480">
 </p>
 
 ## Most Frequent Words
 
-<p style="text-align: center;">
+<p align="center">
   <img src="images/most_frequent_words.png" width="480">
 </p>
 
 ## Reaction on Keyword
 
-<p style="text-align: center;">
+<p align="center">
   <img src="images/reaction_on_keyword.png" width="480">
 </p>
 
 ## Model Comparison
 
-<p style="text-align: center;">
+<p align="center">
   <img src="images/model_comparison.png" width="480">
 </p>
